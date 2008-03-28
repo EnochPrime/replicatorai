@@ -1,0 +1,10 @@
+"AddonInfo"
+{
+	"name"		"Replicators"
+	"version"	""
+	"up_date"	"Jan 2008"
+	"author_name"	"JDM12989"
+	"author_email"	""
+	"author_url"	""
+	"info"		""
+}
