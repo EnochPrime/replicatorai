@@ -1,5 +1,6 @@
-include('shared.lua')
+include("shared.lua");
 
+--################# nice fade away @JDM12989
 function ENT:Draw()
 	self.Alpha = self.Alpha or 255;
 	if(self.Entity:GetNWBool("fade_out")) then
