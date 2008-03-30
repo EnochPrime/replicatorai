@@ -1,4 +1,13 @@
-### Rev.4 (3/29/08)
+### Rev.6 (00/00/08)
+	#General
+		[twk] cleaned up autorun files
+		[chg] add more to core library
+
+	#Blocks
+		[twk] blocks failing to gather multiple times
+		[add] really have the model in now lol
+
+### Rev.5 (3/29/08)
 	#General
 		[add] changelog.txt (a.k.a this file)
 		[add] LICENSE (license to the code)
@@ -9,14 +18,18 @@
 		[twk] minor tweaks to make compatible with current npc code
 		[fix] missing block model
 
-### Rev.3 (3/28/08)
+### Rev.4 (3/28/08)
 	#Rep_N
 		[chg] switched back to headcrab model because rep model isn't done
 
-### Rev.2 (3/28/08)
+### Rev.3 (3/28/08)
 	#General
 		[add] user_config.ini
 
+### Rev.2 (3/28/08)
+	#General
+		[add] Initial Upload
+
 ### Rev.1 (3/28/08)
 	#General
-		[add] SVN
+		[add] SVN Creation

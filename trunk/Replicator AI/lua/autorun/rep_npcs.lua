@@ -1,7 +1,3 @@
-Msg("\n===========================");
-Msg("\n== Replicators Installed ==");
-Msg("\n===========================\n");
-
 local Category = "Replicators"
 
 local NPC = { 	Name = "Replicator", 

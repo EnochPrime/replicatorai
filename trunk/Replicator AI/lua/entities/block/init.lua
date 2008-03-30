@@ -1,6 +1,6 @@
 /*
 	Replicator Block for GarrysMod10
-	Copyright (C) 2007  JDM12989
+	Copyright (C) 2008  JDM12989
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -104,7 +104,9 @@ function ENT:Think()
 		return;
 	end
 
-	--self.leader = nil;
+	if (not self.leader or not ValidEntity(self.leader)) then
+		self.leader = nil;
+	end
 	self:AssignLeaders();
 	
 	if (self.leader == nil) then
@@ -127,7 +129,7 @@ function ENT:Think()
 			table.insert(b_n,v);
 		end
 	end
-	if (#b_n >= Replicators.nrq[self.type]) then
+	if (#b_n >= Replicators.RequiredNumber[self.type]) then
 		for i=1,#b_n do
 			Replicators.Remove(b_n[i]);
 			b_n[i]:Remove();
@@ -151,7 +153,7 @@ function ENT:AssignLeaders()
 			table.insert(b_n,w);
 		end
 	end
-	if (#b_n >= Replicators.nrq[self.type]) then
+	if (#b_n >= Replicators.RequiredNumber[self.type]) then
 		for _,w in pairs (b_n) do
 			w.leader = self;
 		end
