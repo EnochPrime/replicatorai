@@ -27,7 +27,7 @@ function ENT:AttackCode()
 			local att = 0;
 			for _,v in pairs(rep_avail) do
 				att = attack_list[math.random(1,#attack_list)];
-				if (att:IsValid() and att:Alive()) then
+				if (ValidEntity(att) and att:IsPlayer() and att:Alive()) then
 					v.attack = att;
 				else
 					self:RemoveAttacker(att);
