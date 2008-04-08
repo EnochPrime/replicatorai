@@ -8,8 +8,8 @@ ENT.Purpose = "Self Replication"
 ENT.Instructions = ""
  
 ENT.AutomaticFrameAdvance = true
-ENT.model = "models/headcrab.mdl";
---ENT.model = "models/JDM12989/Replicators/Rep_N.mdl";
+--ENT.model = "models/headcrab.mdl";
+ENT.model = "models/JDM12989/Replicators/Rep_N/Rep_N.mdl";
 ENT.hull = HULL_TINY;
 ENT.health = 25;
 ENT.cost = 20;

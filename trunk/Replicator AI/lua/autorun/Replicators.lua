@@ -26,10 +26,22 @@ Replicators.Blocks = {};			-- list of blocks
 Replicators.Reps = {};				-- list of replicators
 Replicators.Limit = 10;				-- maximum number of replicators
 Replicators.RequiredNumber = {};	-- required blocks for types
-	Replicators.RequiredNumber["npc_rep_n"] = 20;	--temp
 	Replicators.RequiredNumber["rep_n"] = 20;
-	Replicators.RequiredNumber["rep_q"] = 0;
+	Replicators.RequiredNumber["rep_q"] = 50;
+Replicators.RD = Dev_Link or #file.FindInLua("weapons/gmod_tool/stools/dev_link.lua") == 1;
+Replicators.CDS = #file.FindInLua("autorun/server/sv_cds_core.lua") == 1;
+Replicators.GC = #file.FindInLua("weapons/gmod_tool/stools/gcombat.lua") == 1;
 
+function Replicators.AddNPCS()
+	local cat = "Replicators"
+	local NPC = {Name = "Replicator",Class = "npc_rep_n",Category = cat};
+	list.Set("NPC",NPC.Class,NPC);
+	NPC = {Name = "Replicator Queen",Class = "npc_rep_l",Category = cat};
+	list.Set("NPC",NPC.Class,NPC);
+	NPC = {Name = "Human-Form",Class = "npc_rep_h",Category = cat};
+	list.Set("NPC",NPC.Class,NPC);
+end
+	
 function Replicators.Add(e)
 	local class = e:GetClass();
 	if (class == "block") then
@@ -61,7 +73,7 @@ function Replicators.Remove(e)
 	end
 end
 
-function Replicators.Attacker(p)
+function Replicators.AddAttacker(p)
 	local add = true;
 	for _,v in pairs(Replicators.Attackers) do
 		if (v == p) then
@@ -81,3 +93,5 @@ function Replicators.RemoveAttacker(p,g,a)
 	end
 end
 hook.Add("PlayerDeath","RemoveFromAttackers",Replicators.RemoveAttacker);
+
+Replicators.AddNPCS();

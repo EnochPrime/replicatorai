@@ -1,4 +1,16 @@
-### Rev.6 (00/00/08)
+### Rev.7 (3/7/08)
+	#General
+		[add] more additions to core library
+		[twk] only 1 autorun file now
+
+	#Basecode
+		[fix] attempt to call method 'Alive' (a nil value) - fixed?
+
+	#Rep_N
+		[chg] update model model that will walk! (now defaulted)
+		[twk] model folder structure "Replicators/Rep_N/"
+
+### Rev.6 (3/29/08)
 	#General
 		[twk] cleaned up autorun files
 		[chg] add more to core library
