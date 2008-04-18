@@ -6,3 +6,4 @@ ENT.Category	= "Stargate"
 
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= false
+ENT.ZatIgnore		= true

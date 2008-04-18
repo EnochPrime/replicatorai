@@ -32,16 +32,18 @@ Replicators.RD = Dev_Link or #file.FindInLua("weapons/gmod_tool/stools/dev_link.
 Replicators.CDS = #file.FindInLua("autorun/server/sv_cds_core.lua") == 1;
 Replicators.GC = #file.FindInLua("weapons/gmod_tool/stools/gcombat.lua") == 1;
 
+--################# Add NPC's to tab @JDM12989
 function Replicators.AddNPCS()
 	local cat = "Replicators"
-	local NPC = {Name = "Replicator",Class = "npc_rep_n",Category = cat};
+	local NPC = {Name = "Replicator",Class = "rep_n",Category = cat};
 	list.Set("NPC",NPC.Class,NPC);
-	NPC = {Name = "Replicator Queen",Class = "npc_rep_l",Category = cat};
+	NPC = {Name = "Replicator Queen",Class = "rep_q",Category = cat};
 	list.Set("NPC",NPC.Class,NPC);
-	NPC = {Name = "Human-Form",Class = "npc_rep_h",Category = cat};
+	NPC = {Name = "Human-Form",Class = "rep_h",Category = cat};
 	list.Set("NPC",NPC.Class,NPC);
 end
-	
+
+--################# Register NPC @JDM12989
 function Replicators.Add(e)
 	local class = e:GetClass();
 	if (class == "block") then
@@ -52,6 +54,7 @@ function Replicators.Add(e)
 	end
 end
 
+--################# Remove NPC @JDM12989
 function Replicators.Remove(e)
 	local class = e:GetClass();
 	if (class == "block") then
@@ -73,6 +76,7 @@ function Replicators.Remove(e)
 	end
 end
 
+--################# Add Attacker @JDM12989
 function Replicators.AddAttacker(p)
 	local add = true;
 	for _,v in pairs(Replicators.Attackers) do
@@ -85,6 +89,7 @@ function Replicators.AddAttacker(p)
 	end
 end
 
+--################# Remove Attacker @JDM12989
 function Replicators.RemoveAttacker(p,g,a)
 	for k,v in pairs(Replicators.Attackers) do
 		if (v == p) then
