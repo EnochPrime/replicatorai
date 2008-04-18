@@ -39,8 +39,7 @@ function ENT:Initialize()
 	self.leader = nil;
 	self.nir = 0;
 	self.timer_run = true;
-	--self.type = "rep_n";
-	self.type = "npc_rep_n"; --temp
+	self.type = "rep_n";
 	
 	-- create a timer to start removale of block if nothing is going on
 	timer.Create("block_delay_"..self.ENTINDEX,10,1,
@@ -124,9 +123,14 @@ function ENT:Think()
 	self:Move();
 	local b_s = ents.FindInSphere(self:GetPos(),10);
 	local b_n = {};
+	local r_n = {};
 	for _,v in pairs(b_s) do
 		if (v:GetClass() == "block") then
 			table.insert(b_n,v);
+		end
+		--if (v:GetClass() == "rep_*") then
+		if (v:GetClass() == "npc_rep_*") then --temp
+			table.insert(r_n,v);
 		end
 	end
 	if (#b_n >= Replicators.RequiredNumber[self.type]) then
@@ -140,7 +144,8 @@ function ENT:Think()
 		e:Spawn();
 	end
 	
-	self:NextThink(CurTime()+1);
+	local rnd = math.Rand(0,1);
+	self:NextThink(CurTime()+rnd);
 end
 
 --################# leader assignment @JDM12989
