@@ -17,8 +17,6 @@
 */
 
 MsgN("=======================================================");
-MsgN("Replicator Core Library Initialized");
-MsgN("=======================================================");
 
 Replicators = Replicators or {};
 Replicators.Attackers = {};			-- list of attackers
@@ -100,3 +98,5 @@ end
 hook.Add("PlayerDeath","RemoveFromAttackers",Replicators.RemoveAttacker);
 
 Replicators.AddNPCS();
+MsgN("Replicator Core Library Initialized");
+MsgN("=======================================================");
