@@ -6,9 +6,9 @@ function ENT:Activity(e)
 		if (Replicators.CDS) then
 			cds_damagepos(e,10,0,nil,self);
 		elseif (Replicators.GC) then
-			gcombat.devhit(e,10);
+			cbt_dealdevhit(e,10,0);
 		else
-			timer.Simple(3,
+			timer.Create("prop_"..e:EntIndex(),3,1,
 				function()
 					e:Remove();
 				end

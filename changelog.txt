@@ -1,3 +1,9 @@
+### Rev.10 (4/19/08)
+	#Base_Rep
+		[fix] Gcombat spam error
+		[fix] No damage sys timer error
+		[add] immunity to Zat (need at least Stagate pack rev.33)
+
 ### Rev.9 (4/18/08)
 	#General
 		[rem] cleaned up old code that didn't want to remove for Rev.8
