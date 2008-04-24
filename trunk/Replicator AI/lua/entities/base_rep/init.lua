@@ -45,6 +45,7 @@ function ENT:Initialize()
 	self:SetHealth(self.Health);
 	Replicators.Add(self);
 	
+	self.groupies = 0;
 	self.leader = nil;
 	self.materials = 0;
 	
@@ -52,6 +53,9 @@ function ENT:Initialize()
 		LS_RegisterEnt(self,"Storage");
 		RD_AddResource(self,"energy",100000);
 	end
+	
+	--self:AddUndo(self:GetOwner(),self);
+	--self:AddCleanup(self:GetOwner(),self);
 end
 
 --################# On Take Damage @JDM12989
@@ -68,11 +72,12 @@ function ENT:OnTakeDamage(dmg)
 			-- MAKE THEM WORK THE CORRECT WAY!!!
 			local str = "models/JDM12989/Replicators/"..self:GetClass().."/Gibs/";
 			for i=1,#file.Find("../"..str.."*.mdl") do
-				local prop = ents.Create("prop_physics");
-				prop:SetModel(str..i..".mdl");
-				prop:SetPos(self:GetPos());
-				prop:SetAngles(self:GetAngles());
-				prop:Spawn();
+				local prop = ents.Create("block");
+				gib:SetModel(str..i..".mdl");
+				gib:SetPos(self:GetPos());
+				gib:SetAngles(self:GetAngles());
+				gib:Spawn();
+				gib.dead = true;
 			end
 		end
 	end

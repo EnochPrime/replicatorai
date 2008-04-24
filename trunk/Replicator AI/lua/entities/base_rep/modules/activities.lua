@@ -3,7 +3,7 @@ function ENT:Activity(e)
 	if (c == "player") then
 		e:TakeDamage(5,self);
 	elseif (c == "prop_physics") then
-		if (Replicators.CDS) then
+		if (Replicators.CD) then
 			cds_damagepos(e,10,0,nil,self);
 		elseif (Replicators.GC) then
 			cbt_dealdevhit(e,10,0);
