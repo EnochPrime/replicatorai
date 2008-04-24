@@ -37,7 +37,7 @@ function ENT:SelectSchedule()
 		self.attack = self:AttackWho();
 		if (table.HasValue(ents.FindInSphere(self:GetPos(),5000),self.attack)) then
 			self:StartSchedule(self:Move(self.attack));
-		else
+		elseif (#Replicators.Reps < Replicators.Limit) then
 			if (self.materials < self.max_materials) then
 				-- gather materials
 				self:StartSchedule(self:Move(self:Find("prop_physics")));
@@ -45,6 +45,8 @@ function ENT:SelectSchedule()
 				-- bring back to queen
 				self:StartSchedule(self:Move(self:Find("rep_q")));
 			end
+		else
+			self:StartSchedule(self:Move());
 		end
 	--end
 end

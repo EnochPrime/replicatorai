@@ -26,6 +26,7 @@ include("shared.lua");
 --################# Init @JDM12989
 function ENT:Initialize()
 	self.BaseClass.Initialize(self);
+	self.max_groupies = 0;
 end
 
 --################# Select Schedule @JDM12989

@@ -1,3 +1,15 @@
+### Rev.11 (4/24/08)
+	#General
+		[add] various sounds added NOT implemented (thanks to spartan393)
+		[add] various little stuff for later
+		[chg] new icon for block in entity tab (thanks to votekick)		
+		[chg] split up autorun into multiple files
+
+	#Base_Rep
+		[add] implemented population capacity (default currently 25)
+		[chg] gibs now spawn as "block" and not "prop_physics" (that means they fade away)
+
+
 ### Rev.10 (4/19/08)
 	#Base_Rep
 		[fix] Gcombat spam error
