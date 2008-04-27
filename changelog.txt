@@ -1,3 +1,10 @@
+### Rev.12 (4/27/08)
+	#General
+		[add] modular AI file (NOT IMPLEMENTED)
+
+	#Base_Rep
+		[fix] gib error spam
+
 ### Rev.11 (4/24/08)
 	#General
 		[add] various sounds added NOT implemented (thanks to spartan393)

@@ -45,6 +45,8 @@ function ENT:Initialize()
 	self:SetHealth(self.Health);
 	Replicators.Add(self);
 	
+	self.ai = true;
+	self.freeze = false;
 	self.groupies = 0;
 	self.leader = nil;
 	self.materials = 0;
@@ -72,12 +74,15 @@ function ENT:OnTakeDamage(dmg)
 			-- MAKE THEM WORK THE CORRECT WAY!!!
 			local str = "models/JDM12989/Replicators/"..self:GetClass().."/Gibs/";
 			for i=1,#file.Find("../"..str.."*.mdl") do
-				local prop = ents.Create("block");
-				gib:SetModel(str..i..".mdl");
+				local gib = ents.Create("block");
 				gib:SetPos(self:GetPos());
 				gib:SetAngles(self:GetAngles());
 				gib:Spawn();
+				gib:SetModel(str..i..".mdl");
+				gib:PhysicsInit(SOLID_VPHYSICS);
+				gib:GetPhysicsObject():Wake();
 				gib.dead = true;
+				gib:OnRemove();
 			end
 		end
 	end
