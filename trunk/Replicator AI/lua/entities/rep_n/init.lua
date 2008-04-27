@@ -31,22 +31,25 @@ end
 
 --################# Select Schedule @JDM12989
 function ENT:SelectSchedule()
-	--if (#Replicators.Reps <= 10) then
-		--self.BaseClass.SelectSchedule();
-	--else
-		self.attack = self:AttackWho();
-		if (table.HasValue(ents.FindInSphere(self:GetPos(),5000),self.attack)) then
-			self:StartSchedule(self:Move(self.attack));
-		elseif (#Replicators.Reps < Replicators.Limit) then
-			if (self.materials < self.max_materials) then
-				-- gather materials
-				self:StartSchedule(self:Move(self:Find("prop_physics")));
+	if (self.freeze) then return end;
+	if (self.ai) then
+		--if (#Replicators.Reps <= 10) then
+			--self.BaseClass.SelectSchedule();
+		--else
+			self.attack = self:AttackWho();
+			if (table.HasValue(ents.FindInSphere(self:GetPos(),5000),self.attack)) then
+				self:StartSchedule(self:Move(self.attack));
+			elseif (#Replicators.Reps < Replicators.Limit) then
+				if (self.materials < self.max_materials) then
+					-- gather materials
+					self:StartSchedule(self:Move(self:Find("prop_physics")));
+				else	
+					-- bring back to queen
+					self:StartSchedule(self:Move(self:Find("rep_q")));
+				end
 			else
-				-- bring back to queen
-				self:StartSchedule(self:Move(self:Find("rep_q")));
+				self:StartSchedule(self:Move());
 			end
-		else
-			self:StartSchedule(self:Move());
-		end
-	--end
+		--end
+	end
 end
