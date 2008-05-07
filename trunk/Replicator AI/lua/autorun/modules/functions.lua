@@ -44,6 +44,8 @@ end
 
 --################# Add Attacker @JDM12989
 function Replicators.AddAttacker(p)
+	local c = p:GetClass();
+	if (c == "rep_n" or c == "rep_q" or c == "rep_h") then return end;
 	local add = true;
 	for _,v in pairs(Replicators.Attackers) do
 		if (v == p) then

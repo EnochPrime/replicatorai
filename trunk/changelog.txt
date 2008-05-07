@@ -1,3 +1,11 @@
+### Rev.13 (5/6/08)
+	#General
+		[add] data folder with start of base ai text
+
+	#Base_Rep & Rep_N
+		[chg] further work toward Replicator control
+		[fix] combat damage systems not working properly
+
 ### Rev.12 (4/27/08)
 	#General
 		[add] modular AI file (NOT IMPLEMENTED)

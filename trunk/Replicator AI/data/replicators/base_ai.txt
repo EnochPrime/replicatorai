@@ -1,0 +1,3 @@
+if (true) then;
+self:Rep_AI_Wander();
+end;

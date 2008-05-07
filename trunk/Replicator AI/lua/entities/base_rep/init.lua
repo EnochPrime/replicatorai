@@ -45,7 +45,9 @@ function ENT:Initialize()
 	self:SetHealth(self.Health);
 	Replicators.Add(self);
 	
-	self.ai = true;
+	self.ai = "base_ai";
+	self.code = "";
+	self:SetCode(self.ai);
 	self.freeze = false;
 	self.groupies = 0;
 	self.leader = nil;
@@ -116,3 +118,12 @@ function ENT:SelectSchedule()
 		e:Spawn();
 	end
 end
+
+function ENT:SetCode(code)
+	local str = file.Read("replicators/"..code..".txt");
+	str = string.Replace(str,"self","ents.GetByIndex("..self.ENTINDEX..")");
+	str = string.Replace(str,";","");
+	self.code = str;
+	self.ai = code;
+end
+
