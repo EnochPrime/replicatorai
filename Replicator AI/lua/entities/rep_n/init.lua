@@ -32,7 +32,8 @@ end
 --################# Select Schedule @JDM12989
 function ENT:SelectSchedule()
 	if (self.freeze) then return end;
-	if (self.ai) then
+	--self.ai = false;
+	if (self.ai == "base_ai") then
 		--if (#Replicators.Reps <= 10) then
 			--self.BaseClass.SelectSchedule();
 		--else
@@ -51,5 +52,7 @@ function ENT:SelectSchedule()
 				self:StartSchedule(self:Move());
 			end
 		--end
+	else
+		RunString(self.code);
 	end
 end

@@ -1,0 +1,5 @@
+if (math.random(0,1) == 0) then;
+self:Rep_AI_MoveToPos(self:GetPos()+Vector(0,1000,0));
+else;
+self:Rep_AI_MoveToPos(self:GetPos()-Vector(0,1000,0));
+end;
