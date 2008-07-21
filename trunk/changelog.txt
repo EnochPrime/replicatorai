@@ -1,3 +1,15 @@
+### Rev.15 (7/21/08)
+	#Rep_N
+		[fix] stopped replicator from locking up when prop is removed
+		[chg] updated to newer functions written for replicator controller
+
+	#Rep_H
+		[chg] updated to newer functions written for replicator controller
+
+	#Weapons
+		[fix] fixed ARG missing function
+		[add] replicator controller (NOT FULLY FUNCTIONING)
+
 ### Rev.14 (7/20/08)
 	#Weapons
 		[add] added the anti-replicator gun
