@@ -120,7 +120,14 @@ function ENT:SelectSchedule()
 end
 
 function ENT:SetCode(code)
-	local str = file.Read("replicators/"..code..".txt");
+	local str = "";
+	if (file.Exists("replicators/"..code..".txt")) then
+		str = file.Read("replicators/"..code..".txt");
+	elseif (file.Exists("../../../data/replicators/"..code..".txt")) then
+		str = file.Read("../../../data/replicators/"..code..".txt");
+	else
+		return;
+	end
 	str = string.Replace(str,"self","ents.GetByIndex("..self.ENTINDEX..")");
 	str = string.Replace(str,";","");
 	self.code = str;
