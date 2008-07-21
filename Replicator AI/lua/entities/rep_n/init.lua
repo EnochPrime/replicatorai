@@ -51,7 +51,7 @@ function ENT:SelectSchedule()
 				else	
 					-- bring back to queen
 					local e = self:Find("rep_q");
-					if (self:Rep_AI_Follow(e) then
+					if (self:Rep_AI_Follow(e)) then
 						self:Activity(e);
 					end
 				end
