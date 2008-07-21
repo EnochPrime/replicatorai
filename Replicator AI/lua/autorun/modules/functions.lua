@@ -67,4 +67,9 @@ function Replicators.RemoveAttacker(p,g,a)
 end
 hook.Add("PlayerDeath","RemoveFromAttackers",Replicators.RemoveAttacker);
 
+function Replicators.ARG()
+	-- immunity code and such
+	return;
+end
+
 Replicators.AddNPCS();

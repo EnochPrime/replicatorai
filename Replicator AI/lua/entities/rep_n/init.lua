@@ -34,22 +34,29 @@ function ENT:SelectSchedule()
 	if (self.freeze) then return end;
 	--self.ai = false;
 	if (self.ai == "base_ai") then
+		-- if low numbers then resort to the start up code
 		--if (#Replicators.Reps <= 10) then
 			--self.BaseClass.SelectSchedule();
 		--else
 			self.attack = self:AttackWho();
 			if (table.HasValue(ents.FindInSphere(self:GetPos(),5000),self.attack)) then
-				self:StartSchedule(self:Move(self.attack));
+				self:Rep_AI_Attack(self.attack);
 			elseif (#Replicators.Reps < Replicators.Limit) then
 				if (self.materials < self.max_materials) then
 					-- gather materials
-					self:StartSchedule(self:Move(self:Find("prop_physics")));
+					local e = self:Find("prop_physics");
+					if (self:Rep_AI_Follow(e)) then
+						self:Activity(e);
+					end
 				else	
 					-- bring back to queen
-					self:StartSchedule(self:Move(self:Find("rep_q")));
+					local e = self:Find("rep_q");
+					if (self:Rep_AI_Follow(e) then
+						self:Activity(e);
+					end
 				end
 			else
-				self:StartSchedule(self:Move());
+				self:Rep_AI_Wander();
 			end
 		--end
 	else

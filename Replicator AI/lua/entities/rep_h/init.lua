@@ -30,7 +30,7 @@ end
   
 function ENT:SelectSchedule()
 	self.attack = self:AttackWho();
-	if(self.attack ~= nil) then
-		self:StartSchedule(self:Move(self.attack));
+	if (table.HasValue(ents.FindInSphere(self:GetPos(),5000),self.attack)) then
+		self:Rep_AI_Attack(self.attack);
 	end
 end

@@ -4,14 +4,14 @@ function ENT:Activity(e)
 		e:TakeDamage(5,self);
 	elseif (c == "prop_physics") then
 		if (gcombat) then
-			MsgN("gcombat damage");
+			--MsgN("gcombat damage");
 			if (gcombat.devhit(e,10,4) == 2) then
 				e:Remove();
 			end
 		elseif (cds_damagepos) then
 			cds_damagepos(e,10,50,nil,self);
 		else
-			MsgN("no sys damage");
+			--MsgN("no sys damage");
 			timer.Create("prop_"..e:EntIndex(),3,1,
 				function()
 					e:Remove();
