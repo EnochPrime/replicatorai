@@ -24,8 +24,8 @@ Replicators.SG = #file.FindInLua("autorun/stargate.lua") == 1;
 -- find precendence & model ignore lists
 Replicators.FindMe = {"prop_physics"};
 Replicators.IgnoreMe = {
-	"brick_01.mdl",
-	"brick_01_small.mdl",
-	"sgc_ramp.mdl",
-	"sgc_ramp_small.mdl"
+	"models/Zup/ramps/brick_01.mdl",
+	"models/Zup/ramps/brick_01_small.mdl",
+	"models/Zup/ramps/sgc_ramp.mdl",
+	"models/Zup/ramps/sgc_ramp_small.mdl"
 };

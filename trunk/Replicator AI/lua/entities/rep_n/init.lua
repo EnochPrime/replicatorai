@@ -38,27 +38,43 @@ function ENT:SelectSchedule()
 		--if (#Replicators.Reps <= 10) then
 			--self.BaseClass.SelectSchedule();
 		--else
+			local wander = false;
 			self.attack = self:AttackWho();
-			if (table.HasValue(ents.FindInSphere(self:GetPos(),5000),self.attack)) then
-				self:Rep_AI_Attack(self.attack);
-			elseif (#Replicators.Reps < Replicators.Limit) then
-				if (self.materials < self.max_materials) then
-					-- gather materials
-					local e = self:Find("prop_physics");
-					if (self:Rep_AI_Follow(e)) then
-						self:Activity(e);
+			if (not self:Rep_AI_Attack(self.attack)) then
+				if (#Replicators.Reps < Replicators.Limit) then
+					if (self.materials < self.max_materials) then
+						local e = self:Find("prop_physics");
+						wander = not self:Rep_AI_Follow(e);
+					else
+						local e = self:Find("rep_q");
+						wander = not self:Rep_AI_Follow(e);
 					end
-				else	
-					-- bring back to queen
-					local e = self:Find("rep_q");
-					if (self:Rep_AI_Follow(e)) then
-						self:Activity(e);
-					end
+				else
+					wander = true;
 				end
-			else
+			end
+			
+			if (wander) then
 				self:Rep_AI_Wander();
 			end
 		--end
+	else
+		RunString(self.code);
+	end
+end
+
+-- eventual final code (hopefully)
+-- attack, if no one to attack, gather, if nothing to gather, wander
+function ENT:TestCode()
+	if (self.freeze) then return end;
+	if (self.ai == "base_ai") then
+		-- something in here for making a queen and such
+		self.attack = self:AttackWho();
+		if (not self:Rep_AI_Attack(self.attack)) then
+			if (not self:Rep_AI_Gather()) then
+				self:Rep_AI_Wander();
+			end
+		end
 	else
 		RunString(self.code);
 	end

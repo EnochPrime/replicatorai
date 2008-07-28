@@ -1,3 +1,14 @@
+### Rev.17 (7/27/08)
+	#General
+		[add] will now ignore certain props such as the stargate ramps	
+
+	#Base_Rep
+		[chg] better ai functions for easier coding
+		[rem] removed obsolete files
+
+	#Rep_N
+		[chg] now uses the updated functions
+
 ### Rev.16 (7/21/08)
 	#General
 		[!!!] forgot a stupid '('
