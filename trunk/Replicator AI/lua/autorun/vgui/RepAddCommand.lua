@@ -23,27 +23,17 @@ MC_Options_Commands = {
 	"Attack",
 	"Disassemble",
 	"Follow",
-	"if",
-	"Move To Position",
+	"Gather",
 	"Wander"
-};
-MC_Options_Comparisons = {
-	"Select Comparison...",
-	"==",
-	"~=",
-	">=",
-	"<=",
-	">",
-	"<"
 };
 MC_Options_Variables = {
 	"Select Variable...",
-	"false",
 	"Materials",
 	"Max Materials",
+	"Number",
 	"Player",
 	"Replicator Amount",
-	"true"
+	"Replicator Limit"
 };
 
 --############### Initializes the panel and buttons
@@ -149,19 +139,9 @@ function PANEL:Think()
 			text:SetText("Choose what to follow.");
 			self.VGUI.PL_Constructor:AddItem(text);
 			self.VGUI.PL_Constructor:AddItem(self:AddVariableMC());
-		elseif (mc_text == "Move To Position") then
+		elseif (mc_text == "Gather") then
 			text = vgui.Create("DLabel",self);
-			text:SetText("Choose the location to move to.");
-			self.VGUI.PL_Constructor:AddItem(text);
-			self.VGUI.PL_Constructor:AddItem(self:AddVariableMC());
-			
-			text = vgui.Create("DLabel",self);
-			text:SetText("Enter minimum wait time. (Optional)");
-			self.VGUI.PL_Constructor:AddItem(text);
-			self.VGUI.PL_Constructor:AddItem(self:AddVariableMC());
-			
-			text = vgui.Create("DLabel",self);
-			text:SetText("Enter maximum wait time. (Optional)");
+			text:SetText("Choose what to gather.");
 			self.VGUI.PL_Constructor:AddItem(text);
 			self.VGUI.PL_Constructor:AddItem(self:AddVariableMC());
 		end
@@ -180,17 +160,6 @@ function PANEL:AddCommandsMC()
 	local item = vgui.Create("DMultiChoice",self);
 	item:SetEditable(false);
 	for _,v in pairs(MC_Options_Commands) do
-		item:AddChoice(v);
-	end
-	item:ChooseOptionID(1);
-	return item;
-end
-
---############### creates a multichoice with comparisons
-function PANEL:AddComparisonMC()
-	local item = vgui.Create("DMultiChoice",self);
-	item:SetEditable(false);
-	for _,v in pairs(MC_Options_Compaisons) do
 		item:AddChoice(v);
 	end
 	item:ChooseOptionID(1);

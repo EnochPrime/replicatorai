@@ -2,11 +2,7 @@
 -- return true	ent to attack
 -- return false	no ent to attack
 function ENT:Rep_AI_Attack(e)
-	if (self:Rep_AI_Follow(e)) then
-		return true;
-	else
-		return false;
-	end
+	self.tasks = self:Rep_AI_Follow(e);
 end
 
 -- make rep fall apart
@@ -27,27 +23,45 @@ function ENT:Rep_AI_Disassemble()
 		gib.dead = true;
 		gib:OnRemove();
 	end
+	self.tasks = true;
 end
 
 -- follows specific ent and performs specific action when less than 50 units away
 -- return true	following
 -- return false	no ent to follow
 function ENT:Rep_AI_Follow(e)
-	if (e == nil or not ValidEntity(e)) then return false end;
-	local pos = self:GetPos();
-	local epos = e:GetPos();
-	self:SetTarget(e);
-	local s = ai_schedule.New();
-	s:EngTask("TASK_GET_PATH_TO_TARGET",0);
-	s:EngTask("TASK_FACE_PATH",0);
-	local d = (pos-epos):Length();
-	if (d > 50) then
-		s:EngTask("TASK_RUN_PATH",0);
+	if (e == nil or not ValidEntity(e)) then
+		self.tasks = false;
 	else
-		self:Activity(e);
+		local pos = self:GetPos();
+		local epos = e:GetPos();
+		self:SetTarget(e);
+		local s = ai_schedule.New();
+		s:EngTask("TASK_GET_PATH_TO_TARGET",0);
+		s:EngTask("TASK_FACE_PATH",0);
+		local d = (pos-epos):Length();
+		if (d > 50) then
+			s:EngTask("TASK_RUN_PATH",0);
+		else
+			self:Activity(e);
+		end
+		self:StartSchedule(s);
+		self.tasks = true;
 	end
-	self:StartSchedule(s);
-	return true;
+	return self.tasks;
+end
+
+-- goes after and gathers materials
+-- return true	prop to gather from
+-- return false	no prop to gather from
+function ENT:Rep_AI_Gather(max_num)
+	local e = nil;
+	if (self.materials < max_num) then
+		e = self:Find("prop_physics");
+	else
+		e = self:Find("rep_q");
+	end
+	self.tasks = self:Rep_AI_Follow(e);
 end
 
 -- make rep move to pos and wait for give time (both = rand)
@@ -68,8 +82,8 @@ function ENT:Rep_AI_Move_To_Position(pos,t_min,t_max)
 end
 
 -- make rep wander about a 1000 unit radius with random 0-5 second wait
-function ENT:Rep_AI_Wander()	
-	Msg("AI_WANDER\n");
+-- returns true
+function ENT:Rep_AI_Wander()
 	local pos = self:GetPos();
 	pos.x = math.random(-1000,1000);
 	pos.y = math.random(-1000,1000);
@@ -81,11 +95,17 @@ function ENT:Rep_AI_Wander()
 	s:EngTask("TASK_WAIT_FOR_MOVEMENT",0);
 	s:EngTask("TASK_WAIT",math.random(0,5));
 	self:StartSchedule(s);
+	self.tasks = true;
 end
 
 -- does appropriate activity based on the entitiy
 function ENT:Activity(e)
 	local c = e:GetClass();
+	if (c == "rep_q") then
+		e.materials = e.materials + self.materials;
+		self.materials = 0;
+	end
+	
 	if (e:IsPlayer() or e:IsNPC()) then
 		e:TakeDamage(5,self);
 	elseif (c == "prop_physics") then
@@ -103,9 +123,6 @@ function ENT:Activity(e)
 			);
 		end
 		self.materials = self.materials + 10;
-	elseif (c == "rep_q") then
-		e.materials = e.materials + self.materials;
-		self.materials = 0;
 	end
 end
 
@@ -119,7 +136,7 @@ function ENT:Find(s)
 	local pos = self:GetPos();
 	for _,v in pairs(ents.FindInSphere(pos,d)) do
 		color = {v:GetColor()};
-		if (v:GetClass() == s and color[4] == 255) then
+		if (v:GetClass() == s and color[4] == 255 and not table.HasValue(Replicators.IgnoreMe,v:GetModel())) then
 			dist = (pos - v:GetPos()):Length();
 			if (dist < d) then
 				d = dist;
@@ -131,14 +148,6 @@ function ENT:Find(s)
 end
 
 --########## NOT TESTED OR WORKING BELOW HERE ##########--
-
-function ENT:Rep_AI_Gather()
-	local e = self:Find("prop_physics");
-	if (self:Rep_AI_Follow(e)) then
-		-- damage prop and increment materials
-		self:Activity(e);
-	end
-end
 
 -- make rep attack enemys within a table
 function ENT:Rep_AI_Attack2(t)
@@ -189,8 +198,4 @@ function ENT:Rep_AI_AttackPlayer(s)
 	else
 		self:Rep_AI_Wander();
 	end
-end
-
-function ENT:Rep_AI_Replicate()
-
 end

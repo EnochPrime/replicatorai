@@ -18,6 +18,9 @@
 
 MsgN("=======================================================");
 Replicators = Replicators or {};
+for _,file in pairs(file.FindInLua("autorun/vgui/*.lua")) do
+	include("vgui/" .. file);
+end
 include("modules/variables.lua");
 include("modules/functions.lua");
 MsgN("Replicator Core Library Initialized");

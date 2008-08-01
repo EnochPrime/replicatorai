@@ -101,8 +101,7 @@ function SWEP:Reload()
 	timer.Create("Rep_Window",0.3,1,
 		function()
 			umsg.Start("Show_RepCodePanel",p);
---			umsg.Start("Show_Rep_Console",p);
---				umsg.Entity(self);
+				umsg.Entity(self.Ent);
 --				if (self.Ent ~= nil) then
 --					umsg.String(self.Ent.ai);
 --				else

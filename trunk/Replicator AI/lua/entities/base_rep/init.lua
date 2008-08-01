@@ -46,12 +46,13 @@ function ENT:Initialize()
 	Replicators.Add(self);
 	
 	self.ai = "base_ai";
-	self.code = "";
+	self.code = {};
 	self:SetCode(self.ai);
 	self.freeze = false;
 	self.groupies = 0;
 	self.leader = nil;
 	self.materials = 0;
+	self.tasks = false;
 	
 	if (Replicators.RD) then
 		LS_RegisterEnt(self,"Storage");
@@ -98,13 +99,7 @@ function ENT:SelectSchedule()
 		local energy = 1000;
 	end
 	-- run away from people
-	-- find materials and energy
-	if (self.materials < self.max_materials + 900) then
-		self:StartSchedule(self:Move(self:Find("prop_physics")));
-	else
-		self:StartSchedule(self:Move(self:Find("energy")));
-	end
-	-- form queen or gather more material
+	-- form queen or gather more material & energy
 	if (energy >= 1000 and self.materials >= 1000) then
 		if (Replicators.RD) then
 			self:ConsumeResource(self,"energy",1000);
@@ -116,21 +111,27 @@ function ENT:SelectSchedule()
 		local e = ents.Create("rep_q");
 		e:SetPos(self:GetPos());
 		e:Spawn();
+	else
+		if (not self:Rep_AI_Gather(self.max_materials + 900)) then
+			if (not self:Rep_AI_Follow(self:Find("energy"))) then
+				self:Rep_AI_Wander();
+			end
+		end
 	end
 end
 
 function ENT:SetCode(code)
-	local str = "";
+	local t = {};
+	local s = "";
 	if (file.Exists("replicators/"..code..".txt")) then
-		str = file.Read("replicators/"..code..".txt");
+		s = file.Read("replicators/"..code..".txt");
 	elseif (file.Exists("../../../data/replicators/"..code..".txt")) then
-		str = file.Read("../../../data/replicators/"..code..".txt");
+		s = file.Read("../../../data/replicators/"..code..".txt");
 	else
 		return;
 	end
-	str = string.Replace(str,"self","ents.GetByIndex("..self.ENTINDEX..")");
-	str = string.Replace(str,";","");
-	self.code = str;
+	s = string.Replace(s,"self","ents.GetByIndex("..self.ENTINDEX..")");
+	t = string.Explode(";",s);
 	self.ai = code;
+	self.code = t;
 end
-
