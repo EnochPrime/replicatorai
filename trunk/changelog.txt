@@ -1,3 +1,26 @@
+### Rev.19 (8/1/08)
+	#General
+		[chg] uploaded changes to changelog
+
+### Rev.18 (8/1/08)
+	#General
+		[chg] folder structure and autorun
+	
+	#Base_Rep
+		[chg] further simplified code
+		[chg] bug that made rep get stuck at queen
+	
+	#Rep_N
+		[chg] running new code
+
+	#Rep_Q
+		[chg] now moniters the replicator limit rather than Rep_N
+
+	#Rep_Ctrl
+		[add] can upload code to replicators, but not all stuff works
+		[!!!] load doesn't work anymore =(
+		[chg] vgui updates because of new code
+
 ### Rev.17 (7/27/08)
 	#General
 		[add] will now ignore certain props such as the stargate ramps	
