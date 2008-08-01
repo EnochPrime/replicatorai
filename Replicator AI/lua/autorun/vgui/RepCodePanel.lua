@@ -18,6 +18,7 @@
 
 PANEL = {};
 CODE = "";
+ENT = nil;
 
 --############### Initializes the panel
 function PANEL:Init()
@@ -41,8 +42,7 @@ function PANEL:Init()
 	self.VGUI.BT_Upload.DoClick =
 		function()
 			CODE = self:CompileCode("test");
-			--self:SetCode(self:CompileCode());
-			--LocalPlayer():ConCommand("Rep_Upload");
+			LocalPlayer():ConCommand("Rep_Upload");
 		end
 		
 	self.VGUI.BT_Refresh:SetText("Refresh");
@@ -100,6 +100,11 @@ function PANEL:Think()
 	end
 end
 
+--############### sets the replicator that was selected 
+function PANEL:SetEnt(e)
+	ENT = e;
+end
+
 --############### create the add command button for the code panel
 function PANEL:CreateAddButton()
 	BT_AddCommand = vgui.Create("DButton",self);
@@ -124,12 +129,13 @@ function PANEL:CompileCode(s)
 		end
 	end
 	file.Write("replicators/" .. s .. ".txt",code);
+	return s;
 end
 
 --############### sets up the gui with the specified code
 function PANEL:SetCode(fn)
 	self.VGUI.PL_Code:Clear();
-	local s = file.Read("replicators/"..fn);
+	local s = file.Read("replicators/"..fn..".txt");
 	local lines = string.Explode(";",s);
 	for k,v in pairs(lines) do
 		if (k == #lines) then return end;
@@ -142,8 +148,54 @@ function PANEL:SetCode(fn)
 				button.frame:SetVisible(true);
 			end
 		button.values = {};
-		string.Replace(v,"self:Rep_AI_","");
-		button.values[1] = string.Left(v,string.find(v,"(")-1);
+		local v_temp = v;
+		local i;
+		v_temp = string.Replace(v_temp,"self:Rep_AI_","");
+		i = string.find(v_temp,"(",1,true);
+		table.insert(button.values,string.sub(v_temp,1,i-1));
+		v_temp = string.Replace(v_temp,button.values[1].."(","");
+		repeat	
+			local index = #button.values;
+			i = string.find(v_temp,",",1,true);
+			if (i ~= nil) then
+				table.insert(button.values,string.sub(v_temp,string.find(v_temp,",")-1));
+				v_temp = string.Replace(v_temp,button.values[index],"");
+			end
+		until (i == nil);
+		i = string.find(v_temp,")",1,true);
+		if (string.sub(v_temp,1,i-1) ~= "") then
+			table.insert(button.values,string.sub(v_temp,1,i-1));
+		end
+		
+		Msg(table.ToString(button.values,"values",false));
+		
+		local f_pl = button.frame.VGUI.PL_Constructor;
+		-- add other multi-choice boxes
+		if (button.values[1] == "Attack") then
+			text = vgui.Create("DLabel",self);
+			text:SetText("Choose what to attack.");
+			f_pl:AddItem(text);
+			f_pl:AddItem(button.frame:AddVariableMC());
+		elseif (button.values[1] == "Follow") then
+			text = vgui.Create("DLabel",self);
+			text:SetText("Choose what to follow.");
+			f_pl:AddItem(text);
+			f_pl:AddItem(button.frame:AddVariableMC());
+		elseif (button.values[1] == "Gather") then
+			text = vgui.Create("DLabel",self);
+			text:SetText("Choose what to follow.");
+			f_pl:AddItem(text);
+			f_pl:AddItem(button.frame:AddVariableMC());
+		end
+		
+		f_items = f_pl:GetItems();
+		
+		for i=3,#f_items,2 do
+			-- set up multichoice
+			local text = button.values[i];
+			f_items[i]:SetText(button.values[i]);
+		end
+		
 		self.VGUI.PL_Code:AddItem(button);
 	end
 end
@@ -156,6 +208,9 @@ usermessage.Hook("Show_RepCodePanel",
 		if (not Window) then
 			Window = vgui.Create("RepCodePanel");
 		end
+		ent = data:ReadEntity();
+		Window:SetEnt(ent);
+		Msg("after set ent\n");
 		Window:SetVisible(true);
 	end
 );

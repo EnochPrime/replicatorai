@@ -32,50 +32,17 @@ end
 --################# Select Schedule @JDM12989
 function ENT:SelectSchedule()
 	if (self.freeze) then return end;
-	--self.ai = false;
-	if (self.ai == "base_ai") then
-		-- if low numbers then resort to the start up code
-		--if (#Replicators.Reps <= 10) then
-			--self.BaseClass.SelectSchedule();
-		--else
-			local wander = false;
-			self.attack = self:AttackWho();
-			if (not self:Rep_AI_Attack(self.attack)) then
-				if (#Replicators.Reps < Replicators.Limit) then
-					if (self.materials < self.max_materials) then
-						local e = self:Find("prop_physics");
-						wander = not self:Rep_AI_Follow(e);
-					else
-						local e = self:Find("rep_q");
-						wander = not self:Rep_AI_Follow(e);
-					end
-				else
-					wander = true;
-				end
-			end
-			
-			if (wander) then
-				self:Rep_AI_Wander();
-			end
-		--end
-	else
-		RunString(self.code);
-	end
-end
-
--- eventual final code (hopefully)
--- attack, if no one to attack, gather, if nothing to gather, wander
-function ENT:TestCode()
-	if (self.freeze) then return end;
-	if (self.ai == "base_ai") then
-		-- something in here for making a queen and such
+	-- if low numbers then resort to the start up code
+	--if (#Replicators.Reps <= 10) then
+		--self.BaseClass.SelectSchedule();
+	--else
 		self.attack = self:AttackWho();
-		if (not self:Rep_AI_Attack(self.attack)) then
-			if (not self:Rep_AI_Gather()) then
-				self:Rep_AI_Wander();
-			end
+		self.tasks = false;
+		local i = 1;
+		while (not self.tasks and i < #self.code) do
+			local s = self.code[i];
+			RunString(s);
+			i = i + 1;
 		end
-	else
-		RunString(self.code);
-	end
+	--end
 end

@@ -31,6 +31,7 @@ end
 
 --################# Select Schedule @JDM12989
 function ENT:SelectSchedule()
+	if (#Replicators.Reps >= Replicators.Limit) then return end;
 	local energy = 100;
 	--[[if (Replicators.RD) then
 		energy = RD_GetResourceAmount(self,"energy");
