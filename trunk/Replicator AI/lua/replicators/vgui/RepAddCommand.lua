@@ -17,7 +17,7 @@
 */
 
 PANEL = {};
-
+--[[
 MC_Options_Commands = {
 	"Select Command...",
 	"Attack",
@@ -26,14 +26,27 @@ MC_Options_Commands = {
 	"Gather",
 	"Wander"
 };
+
 MC_Options_Variables = {
 	"Select Variable...",
 	"Materials",
 	"Max Materials",
+	"NPC",
 	"Number",
 	"Player",
 	"Replicator Amount",
 	"Replicator Limit"
+};
+]]
+MC_Options_Commands = {
+	"Select Command...",
+	"Disassemble",
+	"Gather",
+	"Wander"
+};
+
+MC_Options_Variables = {
+	"Select Variable..."
 };
 
 --############### Initializes the panel and buttons
@@ -45,6 +58,7 @@ function PANEL:Init()
 		PL_Constructor = vgui.Create("DPanelList",self);
 		MC_Commands = vgui.Create("DMultiChoice",self);
 		P_PlayerList = vgui.Create("RepPlayerList",self);
+		P_NPCList = vgui.Create("RepNPCList",self);
 	};
 	
 	self:SetSize(210,400);
@@ -140,17 +154,23 @@ function PANEL:Think()
 			self.VGUI.PL_Constructor:AddItem(text);
 			self.VGUI.PL_Constructor:AddItem(self:AddVariableMC());
 		elseif (mc_text == "Gather") then
-			text = vgui.Create("DLabel",self);
+--[[			text = vgui.Create("DLabel",self);
 			text:SetText("Choose what to gather.");
 			self.VGUI.PL_Constructor:AddItem(text);
-			self.VGUI.PL_Constructor:AddItem(self:AddVariableMC());
+			self.VGUI.PL_Constructor:AddItem(self:AddVariableMC());		]]
 		end
 	end
 	for i=3,#CI,2 do
-		if (CI[i].TextEntry:GetValue() == "Player") then
+		local text = CI[i].TextEntry:GetValue();
+		if (text == "Player") then
 			if (not self.VGUI.P_PlayerList:IsVisible()) then
 				self.VGUI.P_PlayerList:SetVisible(true);
 			end
+		elseif (text == "NPC") then
+			if (not self.VGUI.P_NPCList:IsVisible()) then
+				self.VGUI.P_NPCList:SetVisible(true);
+			end
+		--elseif (text == "Number") then
 		end
 	end
 end

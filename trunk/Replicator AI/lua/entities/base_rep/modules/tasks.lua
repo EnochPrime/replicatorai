@@ -2,6 +2,32 @@
 -- return true	ent to attack
 -- return false	no ent to attack
 function ENT:Rep_AI_Attack(e)
+	-- type check so it can be passed a table of player names to attack
+	if (type(e) == "table") then
+		local players = player.GetAll();
+		local p_table = {};
+		local p_trgt = nil;
+		for _,v in pairs(players) do
+			p_table[v:GetName()] = v;
+		end
+		for _,v in pairs(e) do
+			Msg(table.ToString({p_trgt},"target: ",false).."\n");
+			if (not p_trgt) then
+				Msg("true part\n");
+			else
+				Msg("false part\n");
+			end
+			if (not p_trgt or not p_trgt:IsPlayer()) then
+				Msg("setting target\n");
+				p_trgt = p_table[e];
+				e = p_trgt;
+			end
+		end
+	end
+	-- last resort in case table not chaged to a player
+	if (type(e) == "table") then
+		e = nil;
+	end
 	self.tasks = self:Rep_AI_Follow(e);
 end
 
@@ -51,10 +77,12 @@ function ENT:Rep_AI_Follow(e)
 	return self.tasks;
 end
 
--- goes after and gathers materials
+-- goes after and gathers materials until reached max_num
 -- return true	prop to gather from
 -- return false	no prop to gather from
 function ENT:Rep_AI_Gather(max_num)
+	max_num = max_num or self.max_materials;
+	
 	local e = nil;
 	if (self.materials < max_num) then
 		e = self:Find("prop_physics");
@@ -64,6 +92,7 @@ function ENT:Rep_AI_Gather(max_num)
 	self.tasks = self:Rep_AI_Follow(e);
 end
 
+-- seems like a pointless function, but will stay for now
 -- make rep move to pos and wait for give time (both = rand)
 function ENT:Rep_AI_Move_To_Position(pos,t_min,t_max)
 	local wait = t_min or 0;
@@ -81,19 +110,23 @@ function ENT:Rep_AI_Move_To_Position(pos,t_min,t_max)
 	self:StartSchedule(s);
 end
 
--- make rep wander about a 1000 unit radius with random 0-5 second wait
+-- make rep wander about a 1000 unit radius with random 0-5 second wait or defined by params
 -- returns true
-function ENT:Rep_AI_Wander()
+function ENT:Rep_AI_Wander(radius,min_wait,max_wait)
+	radius = radius or 1000;
+	min_wait = min_wait or 0;
+	max_wait = max_wait or 5;
+	
 	local pos = self:GetPos();
-	pos.x = math.random(-1000,1000);
-	pos.y = math.random(-1000,1000);
+	pos.x = math.random(radius*-1,radius);
+	pos.y = math.random(radius*-1,radius);
 	self:SetLastPosition(pos);
 	local s = ai_schedule.New();
 	s:EngTask("TASK_GET_PATH_TO_LASTPOSITION",0);
 	s:EngTask("TASK_FACE_PATH",0);
 	s:EngTask("TASK_RUN_PATH",0);
 	s:EngTask("TASK_WAIT_FOR_MOVEMENT",0);
-	s:EngTask("TASK_WAIT",math.random(0,5));
+	s:EngTask("TASK_WAIT",math.random(min_wait,max_wait));
 	self:StartSchedule(s);
 	self.tasks = true;
 end
@@ -123,6 +156,8 @@ function ENT:Activity(e)
 			);
 		end
 		self.materials = self.materials + 10;
+	elseif (c == "Zero_Point_Module") then
+		self:Link(self,e);
 	end
 end
 
@@ -148,17 +183,6 @@ function ENT:Find(s)
 end
 
 --########## NOT TESTED OR WORKING BELOW HERE ##########--
-
--- make rep attack enemys within a table
-function ENT:Rep_AI_Attack2(t)
-	for _,v in pairs(player.GetAll()) do
-		if (table.HasValue(t,v:GetName())) then
-			if (self:Rep_AI_Follow(v)) then
-				e:TakeDamage(5,self);
-			end
-		end
-	end
-end
 
 -- make rep attack near-by npc's (FIX! ATTACKS OTHER REPLICATORS)
 function ENT:Rep_AI_AttackNPC()

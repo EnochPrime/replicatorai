@@ -17,10 +17,11 @@
 */
 
 PANEL = {};
-CODE = "";
-ENT = nil;
+PANEL.AI = "";
+PANEL.CODE = "";
+PANEL.ENT = nil;
 
---############### Initializes the panel
+--############### Initializes the panel @JDM12989
 function PANEL:Init()
 	self.VGUI = {
 		BT_Upload = vgui.Create("DButton",self);
@@ -41,7 +42,7 @@ function PANEL:Init()
 	self.VGUI.BT_Upload:SetPos(400,35);
 	self.VGUI.BT_Upload.DoClick =
 		function()
-			CODE = self:CompileCode("test");
+			self.CODE = self:CompileCode("test");
 			LocalPlayer():ConCommand("Rep_Upload");
 		end
 		
@@ -49,7 +50,7 @@ function PANEL:Init()
 	self.VGUI.BT_Refresh:SetPos(400,60);
 	self.VGUI.BT_Refresh.DoClick =
 		function()
-			--self:SetCode(Code);
+			self:SetCode(self.AI);
 		end
 	
 	self.VGUI.BT_Clear:SetText("Clear");
@@ -74,7 +75,7 @@ function PANEL:Init()
 	self.VGUI.PL_Code:EnableVerticalScrollbar(true);
 end
 
---############### Keeps buttons in the correct position when resizing
+--############### Keeps buttons in the correct position when resizing @JDM12989
 function PANEL:PerformLayout()
 	local w,h = self:GetSize();
 	self.VGUI.PL_Code:SetSize(w-90,h-45);
@@ -84,14 +85,14 @@ function PANEL:PerformLayout()
 	self.VGUI.BT_Load:SetPos(w-75,135);
 end
 
---############### Draws the panel
+--############### Draws the panel @JDM12989
 function PANEL:Paint()
 	draw.RoundedBox(10,0,0,self:GetWide(),self:GetTall(),Color(16,16,16,255));
 	draw.DrawText("Replicator Controller","ScoreboardText",30,8,Color(255,255,255,255),0);
 	return true;
 end
 
---############### Adds an add button if there are no items or last item is not an add button
+--############### Adds an add button if there are no items or last item is not an add button @JDM12989
 function PANEL:Think()
 	if (not Window or not Window:IsVisible()) then return end;
 	local CI = self.VGUI.PL_Code:GetItems();
@@ -100,12 +101,12 @@ function PANEL:Think()
 	end
 end
 
---############### sets the replicator that was selected 
+--############### sets the replicator that was selected @JDM12989
 function PANEL:SetEnt(e)
-	ENT = e;
+	self.ENT = e;
 end
 
---############### create the add command button for the code panel
+--############### create the add command button for the code panel @JDM12989
 function PANEL:CreateAddButton()
 	BT_AddCommand = vgui.Create("DButton",self);
 	BT_AddCommand:SetText("Add Command");
@@ -119,26 +120,35 @@ function PANEL:CreateAddButton()
 	return BT_AddCommand;
 end
 
---############### gets all the button text and puts it into a text document
-function PANEL:CompileCode(s)
+--############### gets all the button text and puts it into a text document @JDM12989
+function PANEL:CompileCode(fn)
 	local code = "";
 	local code_items = self.VGUI.PL_Code:GetItems();
 	for k,v in pairs(code_items) do
 		if (k ~= #code_items) then
-			code = code .. v.text;
+			code = code..v.text;
+			-- add a ';' to only lines that need them
+			if (string.find(code,";") == nil) then
+				code = code..";";
+			end
+			-- append a new line
+			if (k < #code_items - 1) then
+				code = code..string.char(10);
+			end
 		end
 	end
-	file.Write("replicators/" .. s .. ".txt",code);
+	file.Write("replicators/"..fn..".txt",code);
 	return s;
 end
 
---############### sets up the gui with the specified code
+--############### sets up the gui with the specified code @JDM12989
 function PANEL:SetCode(fn)
+	if (not fn or fn == nil) then return end;
 	self.VGUI.PL_Code:Clear();
-	local s = file.Read("replicators/"..fn..".txt");
-	local lines = string.Explode(";",s);
-	for k,v in pairs(lines) do
-		if (k == #lines) then return end;
+	local file = file.Read("replicators/"..fn..".txt");
+	local lines = string.Explode(string.char(10),file);
+	for _,v in pairs(lines) do
+		-- create button for line of code
 		local button = vgui.Create("DButton",self);
 		button:SetText(v);
 		button.text = v;
@@ -148,6 +158,7 @@ function PANEL:SetCode(fn)
 				button.frame:SetVisible(true);
 			end
 		button.values = {};
+		--[[
 		local v_temp = v;
 		local i;
 		v_temp = string.Replace(v_temp,"self:Rep_AI_","");
@@ -195,22 +206,24 @@ function PANEL:SetCode(fn)
 			local text = button.values[i];
 			f_items[i]:SetText(button.values[i]);
 		end
-		
+		]]
 		self.VGUI.PL_Code:AddItem(button);
 	end
+	self.AI = fn;
 end
 
 vgui.Register("RepCodePanel",PANEL,"Frame");
 
---############### Brings up the panel
+--############### Brings up the panel @JDM12989
 usermessage.Hook("Show_RepCodePanel",
 	function(data)
 		if (not Window) then
 			Window = vgui.Create("RepCodePanel");
 		end
 		ent = data:ReadEntity();
+		ai = data:ReadString();
 		Window:SetEnt(ent);
-		Msg("after set ent\n");
+		Window:SetCode(ai);
 		Window:SetVisible(true);
 	end
 );

@@ -29,12 +29,12 @@ SWEP.Delay = 5;
 SWEP.TimeOut = 0.25; -- Time in seconds, a target will be tracked when hit with the beam
 SWEP.Ent = nil;
 
---################### Init the SWEP @ jdm12989
+--################### Init the SWEP @JDM12989
 function SWEP:Initialize()
 	self:SetWeaponHoldType("melee");
 end
 
---################### Initialize the shot @ jdm12989
+--################### Initialize the shot @JDM12989
 function SWEP:PrimaryAttack(fast)
 	local ammo = self.Weapon:Clip1();
 	local delay = 0;
@@ -76,7 +76,7 @@ function SWEP:SecondaryAttack()
 			end
 		end
 	end
-	if (self.Ent ~= nil) then
+	if (ValidEntity(self.Ent)) then
 		MsgN("hurray replicators!");
 	end
 	self:EmitSound(self.Sounds.SwitchMode); -- Make some mode-change sounds
@@ -90,30 +90,31 @@ function SWEP:OwnerChanged()
 	--self.Weapon:SetNWBool("Mode",self.AttackMode);
 end
 
---################### Do the shot @ jdm12989
+--################### Do the shot @JDM12989
 function SWEP:DoShoot()
 	local p = self.Owner;
 	if(not ValidEntity(p)) then return end;
 end
 
+--################### Opens up the main gui @JDM12989
 function SWEP:Reload()
 	local p = self.Owner;
 	timer.Create("Rep_Window",0.3,1,
 		function()
 			umsg.Start("Show_RepCodePanel",p);
 				umsg.Entity(self.Ent);
---				if (self.Ent ~= nil) then
---					umsg.String(self.Ent.ai);
---				else
---					umsg.String("");
---				end
+				if (ValidEntity(self.Ent)) then
+					umsg.String(self.Ent.ai);
+				else
+					umsg.String("");
+				end
 			umsg.End();
 			p.RepController = self;
 		end
 	);
 end
 
---################### Think @ jdm12989
+--################### Think @JDM2989
 function SWEP:Think()
 	if(self.AttackMode == 2 and self.Owner:GetNWBool("shooting_hand",false) and not self.Owner:KeyDown(IN_ATTACK)) then
 		self.Owner:SetNWBool("shooting_hand",false);

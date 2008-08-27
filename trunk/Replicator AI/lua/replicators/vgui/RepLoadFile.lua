@@ -95,9 +95,12 @@ function PANEL:Think()
 	if (not Window or not Window:IsVisible()) then return end;
 end
 
+--############### adds all ai files to list view @JDM12989
 function PANEL:SetUpFileList()
 	for _,v in pairs(file.Find("replicators/*.txt")) do
-		self.VGUI.LV_Files:AddLine(v);
+		local text = v;
+		text = string.Replace(text,".txt","");
+		self.VGUI.LV_Files:AddLine(text);
 	end
 end
 
