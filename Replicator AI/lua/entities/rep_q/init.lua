@@ -26,33 +26,45 @@ include("shared.lua");
 --################# Init @JDM12989
 function ENT:Initialize()
 	self.BaseClass.Initialize(self);
-	self.max_groupies = 0;
+	self.max_groupies = 10;
 end
 
 --################# Select Schedule @JDM12989
 function ENT:SelectSchedule()
-	if (#Replicators.Reps >= Replicators.Limit) then return end;
-	local energy = 100;
-	--[[if (Replicators.RD) then
-		energy = RD_GetResourceAmount(self,"energy");
+	-- remove nil values from table
+	while (table.HasValue(self.groupies,nil)) do
+		for k,v in pairs(self.groupies) do
+			if (v == nil) then
+				table.remove(self.groupies,k);
+			end
+		end
 	end
-	-- find energy
+	
+	-- get more groupies if possible
+	if (#self.groupies < self.max_groupies) then
+		local new_groupie = Replicators.GetAvailable(self:GetPos());
+		if (ValidEntity(new_groupie)) then
+			table.insert(self.groupies,new_groupie);
+			new_groupie.leader = self;
+			new_groupie:SetCode("rep_n_group");
+		end
+	end
+	
+	if (#Replicators.Reps >= Replicators.Limit) then return end;
+	local energy = self:GetResource("energy",100);
+	energy = 100; -- temp until finding energy is complete
+	--[[ find energy
 	if (energy == 0) then
 		--self:StartSchedule(self:Move(self:Find("energy")));
 	end]]
 	-- replicate
 	if (energy >= 100 and self.materials >= 200) then
-		--spawn
+		--spawn new rep
 		local pos = self:GetPos() + self:GetForward()*60;
-		--local tbl = ents.FindInSphere(pos,1);
-		--if (#tbl == 1 and tbl[1] == self) then
-			local rep = ents.Create("rep_n");
-			rep:SetPos(pos);
-			rep:Spawn();
-			if (Replicators.RD) then
-				RD_ConsumeResource(self,"energy",100);
-			end
-			self.materials = self.materials - 200;
-		--end
+		local rep = ents.Create("rep_n");
+		rep:SetPos(pos);
+		rep:Spawn();
+		self:ConsumeResource("energy",100);
+		self.materials = self.materials - 200;
 	end
 end

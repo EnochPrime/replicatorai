@@ -1,0 +1,2 @@
+self:Rep_AI_Attack((self.leader).attack);
+self:Rep_AI_Follow(self.leader);

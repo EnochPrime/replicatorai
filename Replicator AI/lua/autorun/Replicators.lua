@@ -1,27 +1,18 @@
-/*
-	Replicators for GarrysMod10
-	Copyright (C) 2008 JDM12989
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-MsgN("=======================================================");
 Replicators = Replicators or {};
-for _,file in pairs(file.FindInLua("autorun/vgui/*.lua")) do
-	include("vgui/" .. file);
+
+function Replicators.Load()
+	MsgN("=======================================================");
+	if (SERVER) then
+		include("replicators/server/"..file.FindInLua("replicators/server/lib.lua")[1]);
+		include("replicators/server/"..file.FindInLua("replicators/server/rd.lua")[1]);
+	elseif (CLIENT) then
+		for _,file in pairs(file.FindInLua("replicators/vgui/*.lua")) do
+			include("replicators/vgui/"..file);
+			AddCSLuaFile("vgui/"..file);
+		end
+	end
+	include("replicators/shared/"..file.FindInLua("replicators/shared/list_reps.lua")[1]);
+	MsgN("Replicator Core Library Initialized");
+	MsgN("=======================================================");
 end
-include("modules/variables.lua");
-include("modules/functions.lua");
-MsgN("Replicator Core Library Initialized");
-MsgN("=======================================================");
+Replicators.Load();

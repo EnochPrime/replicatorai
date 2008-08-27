@@ -5,4 +5,4 @@ ENT.Author		= "JDM12989"
 
 ENT.Model = "models/JDM12989/Replicators/Rep_N/Rep_N.mdl"
 ENT.Hull = HULL_TINY
-ENT.Health = 25;
+ENT.Health = 100;

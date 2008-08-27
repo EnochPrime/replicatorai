@@ -1,3 +1,15 @@
+### Rev.20 (8/26/08)
+	#General
+		[add] functions for clustering replicators
+		[add] RD3 compatibility
+		[mod] cleaned up some unused code
+
+	#Rep_Ctrl
+		[add] NPC list
+		[add] auto load selected replicator code
+		[fix] now can load files correctly
+		[mod] disabled non-working commands
+
 ### Rev.19 (8/1/08)
 	#General
 		[chg] uploaded changes to changelog

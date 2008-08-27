@@ -45,22 +45,16 @@ function ENT:Initialize()
 	self:SetHealth(self.Health);
 	Replicators.Add(self);
 	
-	self.ai = "base_ai";
+	self.ai = self:GetClass();
 	self.code = {};
 	self:SetCode(self.ai);
 	self.freeze = false;
-	self.groupies = 0;
+	self.groupies = {};
 	self.leader = nil;
 	self.materials = 0;
 	self.tasks = false;
 	
-	if (Replicators.RD) then
-		LS_RegisterEnt(self,"Storage");
-		RD_AddResource(self,"energy",100000);
-	end
-	
-	--self:AddUndo(self:GetOwner(),self);
-	--self:AddCleanup(self:GetOwner(),self);
+	self:AddResource("energy",100000);
 end
 
 --################# On Take Damage @JDM12989
@@ -93,19 +87,13 @@ end
 
 --################# Select Schedule @JDM12989
 function ENT:SelectSchedule()
-	if (Replicators.RD) then
-		local energy = RD_GetResourceAmount(self,"energy");
-	else
-		local energy = 1000;
-	end
+	local energy = self:GetResource("energy",1000);
+	
 	-- run away from people
 	-- form queen or gather more material & energy
 	if (energy >= 1000 and self.materials >= 1000) then
-		if (Replicators.RD) then
-			self:ConsumeResource(self,"energy",1000);
-		end
+		self:ConsumeResource("energy",1000);
 		self.materials = self.materials - 1000;
-		-- blocks
 		Replicators.Remove(self);
 		self:Remove();
 		local e = ents.Create("rep_q");
@@ -113,13 +101,14 @@ function ENT:SelectSchedule()
 		e:Spawn();
 	else
 		if (not self:Rep_AI_Gather(self.max_materials + 900)) then
-			if (not self:Rep_AI_Follow(self:Find("energy"))) then
+			if (not self:Rep_AI_Follow(self:Find("Zero_Point_Module"))) then
 				self:Rep_AI_Wander();
 			end
 		end
 	end
 end
 
+--################# Allows the code to be changed @JDM12989
 function ENT:SetCode(code)
 	local t = {};
 	local s = "";
