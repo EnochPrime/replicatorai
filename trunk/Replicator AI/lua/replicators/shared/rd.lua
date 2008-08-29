@@ -1,7 +1,7 @@
 Replicators.RD = {};
 
 function Replicators.AddRDSupport(ENT)
-	ENT.HasRD = Replicators.RD;
+	ENT.HasRD = Replicators.HasRD;
 	
 	ENT.AddResource = Replicators.RD.AddResource;
 	ENT.GetResource = Replicators.RD.GetResource;

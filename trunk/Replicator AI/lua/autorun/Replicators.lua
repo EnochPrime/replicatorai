@@ -2,16 +2,31 @@ Replicators = Replicators or {};
 
 function Replicators.Load()
 	MsgN("=======================================================");
+	local fn = "";
 	if (SERVER) then
-		include("replicators/server/"..file.FindInLua("replicators/server/lib.lua")[1]);
-		include("replicators/server/"..file.FindInLua("replicators/server/rd.lua")[1]);
+		fn = file.FindInLua("replicators/server/lib.lua")[1];
+		include("replicators/server/"..fn);
+		MsgN("Including: "..fn);
 	elseif (CLIENT) then
 		for _,file in pairs(file.FindInLua("replicators/vgui/*.lua")) do
-			include("replicators/vgui/"..file);
-			AddCSLuaFile("vgui/"..file);
+			fn = file;
+			include("replicators/vgui/"..fn);
+			AddCSLuaFile("replicators/vgui/"..file);
+			MsgN("Including: "..fn);
 		end
 	end
-	include("replicators/shared/"..file.FindInLua("replicators/shared/list_reps.lua")[1]);
+	fn = file.FindInLua("replicators/shared/list_reps.lua")[1];
+	include("replicators/shared/"..fn);
+	if (SERVER) then
+		AddCSLuaFile("replicators/shared/"..fn);
+	end
+	MsgN("Including: "..fn);
+	fn = file.FindInLua("replicators/shared/rd.lua")[1];
+	include("replicators/shared/"..fn);
+	if (SERVER) then
+		AddCSLuaFile("replicators/shared/"..fn);
+	end
+	MsgN("Including: "..fn);
 	MsgN("Replicator Core Library Initialized");
 	MsgN("=======================================================");
 end

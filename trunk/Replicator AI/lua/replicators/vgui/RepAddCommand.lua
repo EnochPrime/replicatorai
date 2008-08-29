@@ -17,36 +17,28 @@
 */
 
 PANEL = {};
---[[
-MC_Options_Commands = {
-	"Select Command...",
-	"Attack",
-	"Disassemble",
-	"Follow",
-	"Gather",
-	"Wander"
-};
-
-MC_Options_Variables = {
-	"Select Variable...",
-	"Materials",
-	"Max Materials",
-	"NPC",
-	"Number",
-	"Player",
-	"Replicator Amount",
-	"Replicator Limit"
-};
-]]
-MC_Options_Commands = {
-	"Select Command...",
-	"Disassemble",
-	"Gather",
-	"Wander"
-};
-
-MC_Options_Variables = {
-	"Select Variable..."
+MC_Options = {
+	Commands = {
+		"Select Command...",
+		"Attack",
+		"Disassemble",
+		"Follow",
+		"Gather",
+		"Wander"
+	},
+	Variables_Ents = {
+		"Select Variable...",
+		"Attackable",
+--		"Entities"
+	},
+	Variables_Numbers = {
+		"Select Variable...",
+--		"Materials",
+--		"Max Materials",
+		"Number"--,
+--		"Replicator Amount",
+--		"Replicator Limit"
+	}
 };
 
 --############### Initializes the panel and buttons
@@ -57,8 +49,8 @@ function PANEL:Init()
 		
 		PL_Constructor = vgui.Create("DPanelList",self);
 		MC_Commands = vgui.Create("DMultiChoice",self);
-		P_PlayerList = vgui.Create("RepPlayerList",self);
-		P_NPCList = vgui.Create("RepNPCList",self);
+		P_AttackableList = vgui.Create("RepAttackableList",self);
+		P_NumberPanel = vgui.Create("RepNumberPanel",self);
 	};
 	
 	self:SetSize(210,400);
@@ -72,30 +64,36 @@ function PANEL:Init()
 			local parent = self:GetParent();
 			local mc_items = self.VGUI.PL_Constructor:GetItems();
 			local p_items = parent.VGUI.PL_Code:GetItems();
+			local index = 0;
 			self:SetVisible(false);
-			parent.VGUI.PL_Code:RemoveItem(p_items[#p_items]);
-			local button = vgui.Create("DButton",parent);
-			button.values = {};
-			for i=1,#mc_items,2 do
-				table.insert(button.values,mc_items[i].TextEntry:GetValue());
-			end
-			label = "self:Rep_AI_" .. button.values[1] .. "(";
-			for i=2,#button.values do
-				label = label .. button.values[i];
-				if (i+1 <= #button.values) then
-					label = label .. ",";
+			for k,v in pairs(p_items) do
+				if (v.Frame == self) then
+					index = k;
 				end
 			end
-			label = label .. ");";
+			local button = vgui.Create("DButton",parent);
+			button.Values = {};
+			for i=1,#mc_items,2 do
+				if (mc_items[i].TextEntry:GetValue() ~= MC_Options.Variables_Ents[1]) then
+					table.insert(button.Values,mc_items[i].TextEntry:GetValue());
+				end
+			end
+			label = "self:Rep_AI_" .. button.Values[1] .. "(";
+			for i=2,#button.Values do
+				label = label..button.Values[i];
+				if (i+1 <= #button.Values) then
+					label = label..",";
+				end
+			end
+			label = label..");";
 			button:SetText(label);
-			button.text = label;
-			button.frame = self;
+			button.Text = label;
+			button.Frame = self;
 			button.DoClick = 
 				function()
-					button.frame:SetVisible(true);
+					button.Frame:SetVisible(true);
 				end
-			parent.VGUI.PL_Code:AddItem(button);
-			parent.VGUI.PL_Code:AddItem(parent:CreateAddButton());
+			parent:Replace(button,index);
 		end
 		
 	self.VGUI.BT_Cancel:SetText("Cancel");
@@ -106,10 +104,14 @@ function PANEL:Init()
 		end
 
 	self.VGUI.MC_Commands:SetEditable(false);
-	for _,v in pairs(MC_Options_Commands) do
+	for _,v in pairs(MC_Options.Commands) do
 		self.VGUI.MC_Commands:AddChoice(v);
 	end
 	self.VGUI.MC_Commands:ChooseOptionID(1);
+	self.VGUI.MC_Commands.OnSelect =
+		function()
+			self:UpdateGUI();
+		end	
 		
 	self.VGUI.PL_Constructor:SetPos(10,35);
 	self.VGUI.PL_Constructor:SetSize(self:GetWide()-20,self:GetTall()-75);
@@ -119,7 +121,7 @@ function PANEL:Init()
 	self.VGUI.PL_Constructor:AddItem(self.VGUI.MC_Commands);
 end
 
---############### Keeps buttons in the correct position when resizing
+--############### Keeps buttons in the correct position when resizing @JDM12989
 function PANEL:PerformLayout()
 	local w,h = self:GetSize();
 	self.VGUI.PL_Constructor:SetSize(w-20,h-75);
@@ -127,73 +129,115 @@ function PANEL:PerformLayout()
 	self.VGUI.BT_Cancel:SetPos((w/2)+5,h-35);
 end
 
---############### Draws the panel
+--############### Draws the panel @JDM12989
 function PANEL:Paint()
 	draw.RoundedBox(10,0,0,self:GetWide(),self:GetTall(),Color(16,16,16,255));
 	draw.DrawText("Add Command","ScoreboardText",30,8,Color(255,255,255,255),0);
 	return true;
 end
 
---############### think
+--############### Updates display when drop down changed @JDM12989
+function PANEL:UpdateGUI()
+	local CI = self.VGUI.PL_Constructor:GetItems();
+	local mc_text = CI[1].TextEntry:GetValue();
+	self.VGUI.PL_Constructor:Clear();
+	-- rebuild gui with labels and other drop downs
+	self.VGUI.PL_Constructor:AddItem(CI[1]);
+	if (mc_text == "Attack") then
+		text = vgui.Create("DLabel",self);
+		text:SetText("Choose what to attack.");
+		self.VGUI.PL_Constructor:AddItem(text);
+		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Ents());
+	elseif (mc_text == "Follow") then
+		text = vgui.Create("DLabel",self);
+		text:SetText("Choose what to follow.");
+		self.VGUI.PL_Constructor:AddItem(text);
+		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Ents());
+	elseif (mc_text == "Gather") then
+		text = vgui.Create("DLabel",self);
+		text:SetText("Set amount to gather. (Optional)");
+		self.VGUI.PL_Constructor:AddItem(text);
+		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Numbers());
+	elseif (mc_text == "Wander") then
+		text = vgui.Create("DLabel",self);
+		text:SetText("Set wander radius. (Optional)");
+		self.VGUI.PL_Constructor:AddItem(text);
+		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Numbers());
+		text = vgui.Create("DLabel",self);
+		text:SetText("Set minimum wait time. (Optional)");
+		self.VGUI.PL_Constructor:AddItem(text);
+		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Numbers());
+		text = vgui.Create("DLabel",self);
+		text:SetText("Set maximum wait time. (Optional)");
+		self.VGUI.PL_Constructor:AddItem(text);
+		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Numbers());
+	else
+		return;
+	end
+end
+
+--############### think @JDM12989
 function PANEL:Think()
 	if (not Window or not Window:IsVisible()) then return end;
-	local CI = self.VGUI.PL_Constructor:GetItems();
-	if (#CI == 1) then
-		mc_text = CI[1].TextEntry:GetValue();
-		if (mc_text == "Select Command...") then
-			--self.VGUI.PL_Constructor:Clear();
-			--self.VGUI.PL_Constructor:AddItem(self:AddCommandsMC());
-		elseif (mc_text == "Attack") then
-			text = vgui.Create("DLabel",self);
-			text:SetText("Choose what to attack.");
-			self.VGUI.PL_Constructor:AddItem(text);
-			self.VGUI.PL_Constructor:AddItem(self:AddVariableMC());
-		elseif (mc_text == "Follow") then
-			text = vgui.Create("DLabel",self);
-			text:SetText("Choose what to follow.");
-			self.VGUI.PL_Constructor:AddItem(text);
-			self.VGUI.PL_Constructor:AddItem(self:AddVariableMC());
-		elseif (mc_text == "Gather") then
---[[			text = vgui.Create("DLabel",self);
-			text:SetText("Choose what to gather.");
-			self.VGUI.PL_Constructor:AddItem(text);
-			self.VGUI.PL_Constructor:AddItem(self:AddVariableMC());		]]
-		end
-	end
-	for i=3,#CI,2 do
-		local text = CI[i].TextEntry:GetValue();
-		if (text == "Player") then
-			if (not self.VGUI.P_PlayerList:IsVisible()) then
-				self.VGUI.P_PlayerList:SetVisible(true);
-			end
-		elseif (text == "NPC") then
-			if (not self.VGUI.P_NPCList:IsVisible()) then
-				self.VGUI.P_NPCList:SetVisible(true);
-			end
-		--elseif (text == "Number") then
-		end
-	end
 end
 
 --############### creates a multichoice with commands
 function PANEL:AddCommandsMC()
 	local item = vgui.Create("DMultiChoice",self);
 	item:SetEditable(false);
-	for _,v in pairs(MC_Options_Commands) do
+	for _,v in pairs(MC_Options.Commands) do
 		item:AddChoice(v);
 	end
 	item:ChooseOptionID(1);
 	return item;
 end
 
---############### creates a multichoice with variables
-function PANEL:AddVariableMC()
+--############### creates a multichoice with entity variables
+function PANEL:AddVariableMC_Ents()
 	local item = vgui.Create("DMultiChoice",self);
 	item:SetEditable(false);
-	for _,v in pairs(MC_Options_Variables) do
+	for _,v in pairs(MC_Options.Variables_Ents) do
 		item:AddChoice(v);
 	end
 	item:ChooseOptionID(1);
+	item.OnSelect =
+		function()
+			-- open other guis when needed
+			local CI = self.VGUI.PL_Constructor:GetItems();
+			for i=3,#CI,2 do
+				local text = CI[i].TextEntry:GetValue();
+				if (text == "Attackable") then
+					if (not self.VGUI.P_AttackableList:IsVisible()) then
+						self.VGUI.P_AttackableList:SetVisible(true);
+					end
+				end
+			end
+		end
+	return item;
+end
+
+--############### creates a multichoice with number variables
+function PANEL:AddVariableMC_Numbers()
+	local item = vgui.Create("DMultiChoice",self);
+	item:SetEditable(false);
+	for _,v in pairs(MC_Options.Variables_Numbers) do
+		item:AddChoice(v);
+	end
+	item:ChooseOptionID(1);
+	item.OnSelect =
+		function()
+			-- open other guis when needed
+			local CI = self.VGUI.PL_Constructor:GetItems();
+			for i=3,#CI,2 do
+				local text = CI[i].TextEntry:GetValue();
+				if (text == "Number") then
+					if (not self.VGUI.P_NumberPanel:IsVisible()) then
+						self.VGUI.P_NumberPanel:SetVisible(true);
+						self.VGUI.P_NumberPanel.Index = i;
+					end
+				end
+			end
+		end
 	return item;
 end
 

@@ -1,5 +1,5 @@
 include("shared.lua");
---[[
+
 function ENT:Think()
 	if ((self.Last or 0)+0.6 <= CurTime()) then
 		local v = self:GetVelocity();
@@ -14,4 +14,3 @@ function ENT:Think()
 		end
 	end
 end
-]]

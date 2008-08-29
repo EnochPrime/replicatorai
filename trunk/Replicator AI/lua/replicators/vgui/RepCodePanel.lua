@@ -30,7 +30,6 @@ function PANEL:Init()
 		BT_Load = vgui.Create("DButton",self);
 		
 		PL_Code = vgui.Create("DPanelList",self);
-		P_AddCommand = vgui.Create("RepAddCommand",self);
 		P_LoadFile = vgui.Create("RepLoadFile",self);
 	};
 	
@@ -58,6 +57,7 @@ function PANEL:Init()
 	self.VGUI.BT_Clear.DoClick =
 		function()
 			self.VGUI.PL_Code:Clear();
+			self.VGUI.PL_Code:AddItem(self:CreateAddButton());
 		end
 		
 	self.VGUI.BT_Load:SetText("Load");
@@ -92,41 +92,53 @@ function PANEL:Paint()
 	return true;
 end
 
---############### Adds an add button if there are no items or last item is not an add button @JDM12989
+--############### Thinking... @JDM12989
 function PANEL:Think()
 	if (not Window or not Window:IsVisible()) then return end;
 	local CI = self.VGUI.PL_Code:GetItems();
-	if (#CI == 0 or not CI[#CI].IsAdd) then
+	if (#CI > 0 and not CI[#CI].IsAdd) then
 		self.VGUI.PL_Code:AddItem(self:CreateAddButton());
 	end
 end
 
---############### sets the replicator that was selected @JDM12989
+--############### Sets the replicator that was selected @JDM12989
 function PANEL:SetEnt(e)
 	self.ENT = e;
 end
 
---############### create the add command button for the code panel @JDM12989
+--############### Replaces item at index i with item @JDM12989
+function PANEL:Replace(item,i)
+	local CI = self.VGUI.PL_Code:GetItems();
+	self.VGUI.PL_Code:Clear();
+	for k,v in pairs(CI) do
+		if (k == i) then
+			self.VGUI.PL_Code:AddItem(item);
+		else
+			self.VGUI.PL_Code:AddItem(v);
+		end
+	end
+end
+
+--############### Create the add command button for the code panel @JDM12989
 function PANEL:CreateAddButton()
 	BT_AddCommand = vgui.Create("DButton",self);
 	BT_AddCommand:SetText("Add Command");
 	BT_AddCommand.IsAdd = true;
+	BT_AddCommand.Frame = vgui.Create("RepAddCommand",self);
 	BT_AddCommand.DoClick =
 		function()
-			self.VGUI.P_AddCommand = vgui.Create("RepAddCommand",self);
-			self.VGUI.P_AddCommand:SetVisible(true);
+			BT_AddCommand.Frame:SetVisible(true);
 		end
-		
 	return BT_AddCommand;
 end
 
---############### gets all the button text and puts it into a text document @JDM12989
+--############### Gets all the button text and puts it into a text document @JDM12989
 function PANEL:CompileCode(fn)
 	local code = "";
 	local code_items = self.VGUI.PL_Code:GetItems();
 	for k,v in pairs(code_items) do
 		if (k ~= #code_items) then
-			code = code..v.text;
+			code = code..v.Text;
 			-- add a ';' to only lines that need them
 			if (string.find(code,";") == nil) then
 				code = code..";";
@@ -141,45 +153,47 @@ function PANEL:CompileCode(fn)
 	return s;
 end
 
---############### sets up the gui with the specified code @JDM12989
+--############### Sets up the gui with the specified code @JDM12989
 function PANEL:SetCode(fn)
 	if (not fn or fn == nil) then return end;
 	self.VGUI.PL_Code:Clear();
 	local file = file.Read("replicators/"..fn..".txt");
 	local lines = string.Explode(string.char(10),file);
 	for _,v in pairs(lines) do
-		-- create button for line of code
+		-- create button for the panel
 		local button = vgui.Create("DButton",self);
 		button:SetText(v);
-		button.text = v;
-		button.frame = vgui.Create("RepAddCommand",self);
+		button.Text = v;
+		button.Frame = vgui.Create("RepAddCommand",self);
 		button.DoClick =
 			function()
-				button.frame:SetVisible(true);
+				button.Frame:SetVisible(true);
 			end
-		button.values = {};
-		--[[
+		button.Values = {};
+
+		-- get the function name and all the args and insert into the table button.Values
 		local v_temp = v;
 		local i;
 		v_temp = string.Replace(v_temp,"self:Rep_AI_","");
 		i = string.find(v_temp,"(",1,true);
-		table.insert(button.values,string.sub(v_temp,1,i-1));
-		v_temp = string.Replace(v_temp,button.values[1].."(","");
+		table.insert(button.Values,string.sub(v_temp,1,i-1));
+		v_temp = string.Replace(v_temp,button.Values[1].."(","");
 		repeat	
-			local index = #button.values;
+			local index = #button.Values;
 			i = string.find(v_temp,",",1,true);
 			if (i ~= nil) then
-				table.insert(button.values,string.sub(v_temp,string.find(v_temp,",")-1));
-				v_temp = string.Replace(v_temp,button.values[index],"");
+				table.insert(button.Values,string.sub(v_temp,string.find(v_temp,",")-1));
+				v_temp = string.Replace(v_temp,button.Values[index],"");
 			end
 		until (i == nil);
 		i = string.find(v_temp,")",1,true);
 		if (string.sub(v_temp,1,i-1) ~= "") then
-			table.insert(button.values,string.sub(v_temp,1,i-1));
+			table.insert(button.Values,string.sub(v_temp,1,i-1));
 		end
 		
-		Msg(table.ToString(button.values,"values",false));
+		MsgN(table.ToString(button.Values,"values",false));
 		
+		--[[	move this into the actually frame	button.Frame:Setup(button.Values);
 		local f_pl = button.frame.VGUI.PL_Constructor;
 		-- add other multi-choice boxes
 		if (button.values[1] == "Attack") then

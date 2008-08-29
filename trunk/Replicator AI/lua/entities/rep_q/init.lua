@@ -67,4 +67,32 @@ function ENT:SelectSchedule()
 		self:ConsumeResource("energy",100);
 		self.materials = self.materials - 200;
 	end
+	--[[  commented out because stupid ents.Create cause a nil value error!
+	local pos = self:GetPos() + (self:GetForward() * 60);
+	if (energy >= 100 and self.materials >= 20) then
+		--spawns blocks
+		local block = ents.Create("block");
+		block:SetPos(pos);
+		block:Spawn();
+		self:ConsumeResource("energy",100);
+		self.materials = self.materials - 20;
+	end
+
+	local blocks_near = {};
+	local ents = ents.FindInSphere(pos,60);
+	for _,v in pairs(ents) do
+		if (v:GetClass() == "block") then
+			table.insert(blocks_near,v);
+		end
+	end
+	if (#blocks_near >= Replicators.RequiredNumber["rep_n"]) then
+		-- remove blocks
+		for _,v in pairs(blocks_near) do
+			v:Remove();
+		end
+		-- spawn rep
+		local rep = ents.Create("rep_n");
+		rep:SetPos(pos);
+		rep:Spawn();
+	end													]]
 end
