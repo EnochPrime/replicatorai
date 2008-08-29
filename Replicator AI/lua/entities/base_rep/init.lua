@@ -79,7 +79,6 @@ function ENT:OnTakeDamage(dmg)
 				gib:PhysicsInit(SOLID_VPHYSICS);
 				gib:GetPhysicsObject():Wake();
 				gib.dead = true;
-				gib:OnRemove();
 			end
 		end
 	end

@@ -12,10 +12,10 @@ Replicators.RequiredNumber = {};
 Replicators.RequiredNumber["rep_n"] = 20;
 Replicators.RequiredNumber["rep_q"] = 50;
 -- booleans for other addons
-Replicators.RD = Dev_Link or #file.FindInLua("weapons/gmod_tool/stools/dev_link.lua") == 1;
-Replicators.CD = #file.FindInLua("autorun/server/sv_cds_core.lua") == 1;
-Replicators.GC = #file.FindInLua("weapons/gmod_tool/stools/gcombat.lua") == 1;
-Replicators.SG = #file.FindInLua("autorun/stargate.lua") == 1;
+Replicators.HasRD = Dev_Link or #file.FindInLua("weapons/gmod_tool/stools/dev_link.lua") == 1;
+Replicators.HasCD = #file.FindInLua("autorun/server/sv_cds_core.lua") == 1;
+Replicators.HasGC = #file.FindInLua("weapons/gmod_tool/stools/gcombat.lua") == 1;
+Replicators.HasSG = #file.FindInLua("autorun/stargate.lua") == 1;
 
 -- find precendence & model ignore lists
 Replicators.FindMe = {"prop_physics"};

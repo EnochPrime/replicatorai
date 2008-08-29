@@ -4,27 +4,27 @@
 function ENT:Rep_AI_Attack(e)
 	-- type check so it can be passed a table of player names to attack
 	if (type(e) == "table") then
-		local players = player.GetAll();
-		local p_table = {};
-		local p_trgt = nil;
-		for _,v in pairs(players) do
-			p_table[v:GetName()] = v;
-		end
-		for _,v in pairs(e) do
-			Msg(table.ToString({p_trgt},"target: ",false).."\n");
-			if (not p_trgt) then
-				Msg("true part\n");
-			else
-				Msg("false part\n");
+		local ents = ents.GetAll();
+		local ent_table = {};
+		local ent_trgt = ent_trgt or nil;
+		
+		-- setup of ent_table
+		for _,v in pairs(ents) do
+			if (v:IsPlayer()) then
+				ent_table[v:GetName()] = v;
+			elseif (v:IsNPC()) then
+				ent_table[v:GetClass()] = v;
 			end
-			if (not p_trgt or not p_trgt:IsPlayer()) then
-				Msg("setting target\n");
-				p_trgt = p_table[e];
+		end
+		-- find 1st valid and set as target
+		for k,v in pairs(ent_table) do
+			if (not p_trgt and table.HasValue(e,k) and ValidEntity(v)) then
+				p_trgt = v;
 				e = p_trgt;
 			end
 		end
 	end
-	-- last resort in case table not chaged to a player
+	-- last resort in case the table is not chaged to a player or npc
 	if (type(e) == "table") then
 		e = nil;
 	end

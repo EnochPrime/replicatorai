@@ -21,70 +21,57 @@ PANEL = {}
 function PANEL:Init()
 	self.VGUI = {
 		TE_Number = vgui.Create("DTextEntry",self);
-		
 		BT_Submit = vgui.Create("DButton",self);
-		BT_1 = vgui.Create("DButton",self);
-		BT_2 = vgui.Create("DButton",self);
-		BT_3 = vgui.Create("DButton",self);
-		BT_4 = vgui.Create("DButton",self);
-		BT_5 = vgui.Create("DButton",self);
-		BT_6 = vgui.Create("DButton",self);
-		BT_7 = vgui.Create("DButton",self);
-		BT_8 = vgui.Create("DButton",self);
-		BT_9 = vgui.Create("DButton",self);
-		BT_0 = vgui.Create("DButton",self);
-		BT_Decimal = vgui.Create("DButton",self);
-		BT_Fraction = vgui.Create("DButton",self);
 	};
 	
 	self:SetSize(110,200);
 	self:SetMinimumSize(110,200);
 	self:SetPos(250,100);
 	
+	self.VGUI.TE_Number:SetPos(10,35);
+	--limit characters to just numbers @aVoN
+	self.VGUI.TE_Number.OnTextChanged =
+		function(TextEntry)
+			local text = TextEntry:GetValue();
+			local pos = TextEntry:GetCaretPos();
+			local len = text:len();
+			local letters = text:upper():gsub("[^0-9]",""):TrimExplode(""); -- Upper, remove invalid chars and split!
+			local text = ""; -- Wipe
+			for _,v in pairs(letters) do
+				text = text..v;
+			end
+			TextEntry:SetText(text);
+			TextEntry:SetCaretPos(math.Clamp(pos - (len-#letters),0,text:len())); -- Reset the caretpos!
+		end
+		
 	self.VGUI.BT_Submit:SetText("Submit");
 	self.VGUI.BT_Submit:SetPos(20,175);
 	self.VGUI.BT_Submit.DoClick =
 		function()
 			self:SetVisible(false);
-			parent = self:GetParent();
-			self.VGUI.TE_Number:GetValue();
+			local parent = self:GetParent();
+			local text = self.VGUI.TE_Number:GetValue();
+			local p_items = parent.VGUI.PL_Constructor:GetItems();
+			p_items[self.Index]:SetText(text);
 		end
-		
-	self.VGUI.PL_Players:SetPos(10,35);
-	self.VGUI.PL_Players:SetSize(self:GetWide()-20,self:GetTall()-75);
-	self.VGUI.PL_Players:SetSpacing(5);
-	self.VGUI.PL_Players:EnableHorizontal(false);
-	self.VGUI.PL_Players:EnableVerticalScrollbar(true);
-	
-	self:SetUpPlayerList()
 end
 
---############### Keeps buttons in the correct position when resizing
+--############### Keeps buttons in the correct position when resizing @JDM12989
 function PANEL:PerformLayout()
 	local w,h = self:GetSize();
-	self.VGUI.PL_Players:SetSize(w-20,h-75);
 	self.VGUI.BT_Submit:SetPos((w/2)-30,h-35);
 end
 
---############### Draws the panel
+--############### Draws the panel @JDM12989
 function PANEL:Paint()
 	draw.RoundedBox(10,0,0,self:GetWide(),self:GetTall(),Color(16,16,16,255));
-	draw.DrawText("Player List","ScoreboardText",30,8,Color(255,255,255,255),0);
+	draw.DrawText("Number Input","ScoreboardText",30,8,Color(255,255,255,255),0);
 	return true;
 end
 
+--############### Thinking... @JDM12989
 function PANEL:Think()
 	if (not Window or not Window:IsVisible()) then return end;
 end
 
-function PANEL:SetUpPlayerList()
-	players = player.GetAll();
-	for _,v in pairs(players) do
-		CB_Player = vgui.Create("DCheckBoxLabel",self);
-		CB_Player:SetText(v:GetName());
-		CB_Player.text = v:GetName();
-		self.VGUI.PL_Players:AddItem(CB_Player);
-	end
-end
-
-vgui.Register("RepPlayerList",PANEL,"Frame");
+vgui.Register("RepNumberPanel",PANEL,"Frame");
