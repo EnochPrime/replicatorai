@@ -29,7 +29,7 @@ function PANEL:Init()
 	
 	self:SetSize(110,200);
 	self:SetMinimumSize(110,200);
-	self:SetPos(250,100);
+	self:SetPos(400,100);
 	
 	self.VGUI.BT_Submit:SetText("Submit");
 	self.VGUI.BT_Submit:SetPos(20,175);

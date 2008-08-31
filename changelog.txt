@@ -1,3 +1,29 @@
+### Rev.22 (8/31/08)
+	#General
+		[add] now adds models/materials/sounds to client download
+		[add] now has materl_metal & material_other
+		[add] Replicators.RegisterVGUI
+		[chg] materials now moniter by RD
+		[fix] health not being set properly
+		[fix] getting stuck in the air
+
+	#Base_Rep
+		[add] delay variable for disassemble
+		[add] update command (uploads it's code to near by replicators)
+		[twk] registered vguis
+		[twk] string table compatability for Follow
+
+	#Block
+		[twk] gcombat/cds immunity so they don't explode when annhilating replicators with staff weapon =P
+
+	#Rep_Ctrl
+		[add] more numbers: materials,replicator limit (not written in MC nicely but they are there)
+		[chg] a lot simplier way for setting up drop downs (won't have to edit add command everytime I make a new command)
+		[chg] now uses phys_gun model in case people don't have the stargate addon installed (which they should, because it's amazing!)
+		[fix] hopefully some of the gui errors are fixed...
+		[twk] no longer need to right click, just open gui with 'R'
+		[twk] can't open gui without replicator within 2000 units
+
 ### Rev.21 (8/29/08)
 	#Autorun/Base_Rep
 		[fix] Resource Distribution support not being initialized
@@ -13,6 +39,9 @@
 		[chg] performance increase for AddCommand
 		[chg] split variable multichoice into 2 (ents/numbers)
 		[rem] outdated playerlist & npclist
+
+	#ARG
+		[add] spawn icon (thanks to The_jumper)
 
 ### Rev.20 (8/26/08)
 	#General

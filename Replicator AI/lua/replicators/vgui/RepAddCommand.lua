@@ -20,24 +20,19 @@ PANEL = {};
 MC_Options = {
 	Commands = {
 		"Select Command...",
-		"Attack",
-		"Disassemble",
-		"Follow",
-		"Gather",
-		"Wander"
 	},
 	Variables_Ents = {
 		"Select Variable...",
 		"Attackable",
---		"Entities"
+		"Entities"
 	},
 	Variables_Numbers = {
 		"Select Variable...",
---		"Materials",
---		"Max Materials",
-		"Number"--,
---		"Replicator Amount",
---		"Replicator Limit"
+		"self:GetResource("..string.char(34).."material_metal"..string.char(34)..")",
+		--"self:GetUnitCapacity("..string.char(34).."material_metal"..string.char(34)..")",
+		"Number",
+		--"#Replicators.Reps",
+		"Replicators.Limit"
 	}
 };
 
@@ -48,13 +43,12 @@ function PANEL:Init()
 		BT_Cancel = vgui.Create("DButton",self);
 		
 		PL_Constructor = vgui.Create("DPanelList",self);
-		MC_Commands = vgui.Create("DMultiChoice",self);
 		P_AttackableList = vgui.Create("RepAttackableList",self);
 		P_NumberPanel = vgui.Create("RepNumberPanel",self);
 	};
 	
-	self:SetSize(210,400);
-	self:SetMinimumSize(210,210);
+	self:SetSize(210,300);
+	self:SetMinimumSize(210,300);
 	self:SetPos(100,100);
 	
 	self.VGUI.BT_Submit:SetText("Submit");
@@ -66,6 +60,7 @@ function PANEL:Init()
 			local p_items = parent.VGUI.PL_Code:GetItems();
 			local index = 0;
 			self:SetVisible(false);
+			if (mc_items[1].TextEntry:GetValue() == "Select Commands...") then return end;
 			for k,v in pairs(p_items) do
 				if (v.Frame == self) then
 					index = k;
@@ -102,23 +97,24 @@ function PANEL:Init()
 		function()
 			self:SetVisible(false);
 		end
-
-	self.VGUI.MC_Commands:SetEditable(false);
-	for _,v in pairs(MC_Options.Commands) do
-		self.VGUI.MC_Commands:AddChoice(v);
-	end
-	self.VGUI.MC_Commands:ChooseOptionID(1);
-	self.VGUI.MC_Commands.OnSelect =
-		function()
-			self:UpdateGUI();
-		end	
 		
 	self.VGUI.PL_Constructor:SetPos(10,35);
 	self.VGUI.PL_Constructor:SetSize(self:GetWide()-20,self:GetTall()-75);
 	self.VGUI.PL_Constructor:SetSpacing(5);
 	self.VGUI.PL_Constructor:EnableHorizontal(false);
 	self.VGUI.PL_Constructor:EnableVerticalScrollbar(true);
-	self.VGUI.PL_Constructor:AddItem(self.VGUI.MC_Commands);
+	
+	self:InitCommands();
+	self.VGUI.PL_Constructor:AddItem(self:CreateCommandsMC());
+end
+
+--############### Sets up all register commands @JDM12989
+function PANEL:InitCommands()
+	for k,v in pairs(Replicators.VGUI) do
+		if (not table.HasValue(MC_Options.Commands,k)) then
+			table.insert(MC_Options.Commands,2,k);
+		end
+	end
 end
 
 --############### Keeps buttons in the correct position when resizing @JDM12989
@@ -143,36 +139,18 @@ function PANEL:UpdateGUI()
 	self.VGUI.PL_Constructor:Clear();
 	-- rebuild gui with labels and other drop downs
 	self.VGUI.PL_Constructor:AddItem(CI[1]);
-	if (mc_text == "Attack") then
-		text = vgui.Create("DLabel",self);
-		text:SetText("Choose what to attack.");
-		self.VGUI.PL_Constructor:AddItem(text);
-		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Ents());
-	elseif (mc_text == "Follow") then
-		text = vgui.Create("DLabel",self);
-		text:SetText("Choose what to follow.");
-		self.VGUI.PL_Constructor:AddItem(text);
-		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Ents());
-	elseif (mc_text == "Gather") then
-		text = vgui.Create("DLabel",self);
-		text:SetText("Set amount to gather. (Optional)");
-		self.VGUI.PL_Constructor:AddItem(text);
-		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Numbers());
-	elseif (mc_text == "Wander") then
-		text = vgui.Create("DLabel",self);
-		text:SetText("Set wander radius. (Optional)");
-		self.VGUI.PL_Constructor:AddItem(text);
-		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Numbers());
-		text = vgui.Create("DLabel",self);
-		text:SetText("Set minimum wait time. (Optional)");
-		self.VGUI.PL_Constructor:AddItem(text);
-		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Numbers());
-		text = vgui.Create("DLabel",self);
-		text:SetText("Set maximum wait time. (Optional)");
-		self.VGUI.PL_Constructor:AddItem(text);
-		self.VGUI.PL_Constructor:AddItem(self:AddVariableMC_Numbers());
-	else
-		return;
+	for k,v in pairs(Replicators.VGUI) do
+		if (mc_text == k) then
+			for j,u in pairs(v) do
+				if (j % 2 == 0) then
+					self.VGUI.PL_Constructor:AddItem(self:CreateVariableMC(u));
+				else
+					label = vgui.Create("DLabel",self);
+					label:SetText(u);
+					self.VGUI.PL_Constructor:AddItem(label);
+				end
+			end
+		end
 	end
 end
 
@@ -181,23 +159,33 @@ function PANEL:Think()
 	if (not Window or not Window:IsVisible()) then return end;
 end
 
---############### creates a multichoice with commands
-function PANEL:AddCommandsMC()
+--############### Creates a multichoice with commands @JDM12989
+function PANEL:CreateCommandsMC()
 	local item = vgui.Create("DMultiChoice",self);
 	item:SetEditable(false);
 	for _,v in pairs(MC_Options.Commands) do
 		item:AddChoice(v);
 	end
 	item:ChooseOptionID(1);
+	item.OnSelect =
+		function()
+			self:UpdateGUI();
+		end
 	return item;
 end
 
---############### creates a multichoice with entity variables
-function PANEL:AddVariableMC_Ents()
+--############### Creates a variable multichoice @JDM12989
+function PANEL:CreateVariableMC(k)
 	local item = vgui.Create("DMultiChoice",self);
 	item:SetEditable(false);
-	for _,v in pairs(MC_Options.Variables_Ents) do
-		item:AddChoice(v);
+	if (k == "ents") then
+		for _,v in pairs(MC_Options.Variables_Ents) do
+			item:AddChoice(v);
+		end
+	elseif (k == "numbers") then
+		for _,v in pairs(MC_Options.Variables_Numbers) do
+			item:AddChoice(v);
+		end
 	end
 	item:ChooseOptionID(1);
 	item.OnSelect =
@@ -210,27 +198,7 @@ function PANEL:AddVariableMC_Ents()
 					if (not self.VGUI.P_AttackableList:IsVisible()) then
 						self.VGUI.P_AttackableList:SetVisible(true);
 					end
-				end
-			end
-		end
-	return item;
-end
-
---############### creates a multichoice with number variables
-function PANEL:AddVariableMC_Numbers()
-	local item = vgui.Create("DMultiChoice",self);
-	item:SetEditable(false);
-	for _,v in pairs(MC_Options.Variables_Numbers) do
-		item:AddChoice(v);
-	end
-	item:ChooseOptionID(1);
-	item.OnSelect =
-		function()
-			-- open other guis when needed
-			local CI = self.VGUI.PL_Constructor:GetItems();
-			for i=3,#CI,2 do
-				local text = CI[i].TextEntry:GetValue();
-				if (text == "Number") then
+				elseif (text == "Number") then
 					if (not self.VGUI.P_NumberPanel:IsVisible()) then
 						self.VGUI.P_NumberPanel:SetVisible(true);
 						self.VGUI.P_NumberPanel.Index = i;

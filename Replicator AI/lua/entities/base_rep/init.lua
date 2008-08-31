@@ -20,14 +20,6 @@
 AddCSLuaFile("cl_init.lua");
 AddCSLuaFile("shared.lua");
 include("shared.lua");
-MsgN("=======================================================");
-MsgN("Replicator Base Code Initializing...");
-for _,file in pairs(file.FindInLua("entities/base_rep/modules/*.lua")) do
-	MsgN("Initializing: "..file);
-	include("modules/"..file);
-end
-MsgN("Replicator Base Code Initialized Successfully");
-MsgN("=======================================================");
 
 --################# SENT CODE #################
 
@@ -35,14 +27,14 @@ MsgN("=======================================================");
 function ENT:Initialize()
 	self.ENTINDEX = self:EntIndex();
 	self:SetModel(self.Model);
-	--self:PhysicsInit(SOLID_VPHYSICS);
+	self:PhysicsInit(SOLID_VPHYSICS);
 	self:SetMoveType(MOVETYPE_STEP);
 	self:SetSolid(SOLID_BBOX);
 	self:SetHullType(self.Hull);
 	self:SetHullSizeNormal();
 	self:CapabilitiesAdd(CAP_MOVE_GROUND);
 	self:SetMaxYawSpeed(5000);
-	self:SetHealth(self.Health);
+	self:SetNWInt("Health",self.Max_Health);
 	Replicators.Add(self);
 	
 	self.ai = self:GetClass();
@@ -51,10 +43,16 @@ function ENT:Initialize()
 	self.freeze = false;
 	self.groupies = {};
 	self.leader = nil;
-	self.materials = 0;
 	self.tasks = false;
 	
 	self:AddResource("energy",100000);
+	self:AddResource("material_metal",5000);
+	self:AddResource("material_other",5000);
+	
+	local phys = self:GetPhysicsObject()
+	if (phys:IsValid()) then
+		phys:Wake();
+	end
 end
 
 --################# On Take Damage @JDM12989
@@ -62,8 +60,9 @@ function ENT:OnTakeDamage(dmg)
 	local att = dmg:GetAttacker();
 	local dam = dmg:GetDamage();
 	Replicators.AddAttacker(att);
-	self:SetHealth(self:Health() - dam);
-	if (self:Health() <= 0) then
+	local health = self:GetNWInt("Health");
+	self:SetNWInt("Health",math.Clamp(health-dam,0,self.Max_Health));
+	if (self:GetNWInt("Health") == 0) then
 		if (dmg:IsBulletDamage() or (dmg:IsExplosionDamage() and dam < 100) or dam == 100) then
 			--fall apart
 			Replicators.Remove(self);
@@ -99,7 +98,7 @@ function ENT:SelectSchedule()
 		e:SetPos(self:GetPos());
 		e:Spawn();
 	else
-		if (not self:Rep_AI_Gather(self.max_materials + 900)) then
+		if (not self:Rep_AI_Gather(1000)) then
 			if (not self:Rep_AI_Follow(self:Find("Zero_Point_Module"))) then
 				self:Rep_AI_Wander();
 			end
@@ -122,4 +121,16 @@ function ENT:SetCode(code)
 	t = string.Explode(";",s);
 	self.ai = code;
 	self.code = t;
+	
+	self:SetSchedule(SCHED_NONE);
+end
+
+--################# Retrieve the currently running code's name @JDM12989
+function ENT:GetAI()
+	return self.ai;
+end
+
+--################# Retrieve the currently running code @JDM12989
+function ENT:GetCode()
+	return self.code;
 end

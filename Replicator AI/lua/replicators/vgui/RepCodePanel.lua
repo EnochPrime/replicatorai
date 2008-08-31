@@ -177,17 +177,21 @@ function PANEL:SetCode(fn)
 		v_temp = string.Replace(v_temp,"self:Rep_AI_","");
 		i = string.find(v_temp,"(",1,true);
 		table.insert(button.Values,string.sub(v_temp,1,i-1));
-		v_temp = string.Replace(v_temp,button.Values[1].."(","");
-		repeat	
-			local index = #button.Values;
+		v_temp = string.sub(v_temp,i+1);
+		i = string.find(v_temp,"}",1,true);
+		if (i ~= nil) then
+			table.insert(button.Values,string.sub(v_temp,1,i));
+			v_temp = string.Replace(v_temp,i+1);
+		end
+		repeat
 			i = string.find(v_temp,",",1,true);
 			if (i ~= nil) then
-				table.insert(button.Values,string.sub(v_temp,string.find(v_temp,",")-1));
-				v_temp = string.Replace(v_temp,button.Values[index],"");
+				table.insert(button.Values,string.sub(v_temp,1,i-1));
+				v_temp = string.sub(v_temp,i+1);
 			end
 		until (i == nil);
 		i = string.find(v_temp,")",1,true);
-		if (string.sub(v_temp,1,i-1) ~= "") then
+		if (i ~= nil and v_temp ~= ");") then
 			table.insert(button.Values,string.sub(v_temp,1,i-1));
 		end
 		
