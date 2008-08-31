@@ -22,6 +22,8 @@ AddCSLuaFile("shared.lua");
 include("shared.lua");
 
 --################# SENT CODE #################
+ENT.CDSIgnore = true;
+function ENT:gcbt_breakactions() end; ENT.hasdamagecase = true;
 
 --################# Init @JDM12989
 function ENT:Initialize()

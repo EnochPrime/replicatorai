@@ -29,8 +29,19 @@ function ENT:Initialize()
 end
   
 function ENT:SelectSchedule()
-	self.attack = self:AttackWho();
-	if (table.HasValue(ents.FindInSphere(self:GetPos(),5000),self.attack)) then
-		self:Rep_AI_Attack(self.attack);
-	end
+	if (self.freeze) then return end;
+	-- if low numbers then resort to the start up code
+--	if (#Replicators.Reps <= 1) then
+--		self.BaseClass.SelectSchedule();
+--	else
+		self.attack = self:AttackWho();
+		self.tasks = false;
+		local i = 1;
+		local code = self:GetCode();
+		while (not self.tasks and i < #code) do
+			local s = code[i];
+			RunString(s);
+			i = i + 1;
+		end
+--	end
 end

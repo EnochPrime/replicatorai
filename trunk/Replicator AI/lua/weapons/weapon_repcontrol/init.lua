@@ -67,19 +67,7 @@ end
 
 --################### Secondary Attack @ aVoN
 function SWEP:SecondaryAttack()
-	self.Ent = nil;
-	trgts = ents.FindInSphere(self:GetPos(),2000);
-	for _,v in pairs(trgts) do
-		if (ValidEntity(v)) then
-			if (v:GetClass() == "rep_n" or v:GetClass() == "rep_q" or v:GetClass() == "rep_h") then
-				self.Ent = v;
-			end
-		end
-	end
-	if (ValidEntity(self.Ent)) then
-		MsgN("hurray replicators!");
-	end
-	self:EmitSound(self.Sounds.SwitchMode); -- Make some mode-change sounds
+	--self:EmitSound(self.Sounds.SwitchMode); -- Make some mode-change sounds
 	--self.Weapon:SetNWBool("Mode",self.AttackMode); -- Tell client, what mode we are in
 	--self.Owner.__HandDeviceMode = self.AttackMode; -- So modes are saved accross "session" (if he died it's the last mode he used it before)
 end
@@ -98,6 +86,16 @@ end
 
 --################### Opens up the main gui @JDM12989
 function SWEP:Reload()
+	self.Ent = nil;
+	trgts = ents.FindInSphere(self:GetPos(),2000);
+	for _,v in pairs(trgts) do
+		if (ValidEntity(v)) then
+			if (v:GetClass() == "rep_n" or v:GetClass() == "rep_q" or v:GetClass() == "rep_h") then
+				self.Ent = v;
+			end
+		end
+	end
+	if (not ValidEntity(self.Ent)) then return end;
 	local p = self.Owner;
 	timer.Create("Rep_Window",0.3,1,
 		function()

@@ -8,7 +8,6 @@ include("shared.lua");
 --################# Init @JDM12989
 function ENT:Initialize()
 	self.BaseClass.Initialize(self);
-	self.max_materials = 100;
 end
 
 --################# Select Schedule @JDM12989
@@ -21,8 +20,9 @@ function ENT:SelectSchedule()
 		self.attack = self:AttackWho();
 		self.tasks = false;
 		local i = 1;
-		while (not self.tasks and i < #self.code) do
-			local s = self.code[i];
+		local code = self:GetCode();
+		while (not self.tasks and i < #code) do
+			local s = code[i];
 			RunString(s);
 			i = i + 1;
 		end

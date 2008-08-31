@@ -27,8 +27,8 @@ SWEP.Slot = 3;
 SWEP.SlotPos = 3;
 SWEP.DrawAmmo	= true;
 SWEP.DrawCrosshair = true;
-SWEP.ViewModel = "models/weapons/v_models/v_hdevice.mdl";
-SWEP.WorldModel = "models/w_hdevice.mdl";
+SWEP.ViewModel = "models/weapons/v_superphyscannon.mdl";
+SWEP.WorldModel = "models/w_physics.mdl";
 
 -- primary.
 SWEP.Primary.ClipSize = -1;
