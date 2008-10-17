@@ -29,26 +29,18 @@ SWEP.TimeOut = 0.25; -- Time in seconds, a target will be tracked when hit with 
 
 --################### Init the SWEP @ jdm12989
 function SWEP:Initialize()
-	self:SetWeaponHoldType("melee");
+	self:SetWeaponHoldType("ar2");
 end
 
 --################### Initialize the shot @ jdm12989
 function SWEP:PrimaryAttack(fast)
 	local ammo = self.Weapon:Clip1();
 	local delay = 0;
-	if(self.AttackMode == 1 and ammo >= 20 and not fast) then
+	if(ammo >= 20 and not fast) then
 		self.Owner:EmitSound(self.Sounds.Shot[1],90,math.random(96,102));
 		self:PushEffect();
 		delay = 0.3;
 		self.Weapon:SetNextPrimaryFire(CurTime()+0.8);
-	elseif(self.AttackMode == 2 and ammo >= 3) then
-		self.Owner:SetNWBool("shooting_hand",true);
-		local time = CurTime();
-		if((self.LastSound or 0)+0.9 < time) then
-			self.LastSound = time;
-			self.Owner:EmitSound(self.Sounds.Shot[2],90,math.random(96,102));
-		end
-		self.Weapon:SetNextPrimaryFire(CurTime()+0.1);
 	else
 		self.Weapon:SetNextPrimaryFire(CurTime()+0.5);
 	end
@@ -71,12 +63,12 @@ function SWEP:SecondaryAttack()
 	self:EmitSound(self.Sounds.SwitchMode); -- Make some mode-change sounds
 	self.Owner:SetAmmo(self.Secondary.Ammo,self.AttackMode);
 	self.Weapon:SetNWBool("Mode",self.AttackMode); -- Tell client, what mode we are in
-	self.Owner.__HandDeviceMode = self.AttackMode; -- So modes are saved accross "session" (if he died it's the last mode he used it before)
+	self.Owner.__ARGMode = self.AttackMode; -- So modes are saved accross "session" (if he died it's the last mode he used it before)
 end
 
 --################### Reset Mode @ aVoN
 function SWEP:OwnerChanged() 
-	self.AttackMode = self.Owner.__HandDeviceMode or 1;
+	self.AttackMode = self.Owner.__ARGMode or 1;
 	self.Weapon:SetNWBool("Mode",self.AttackMode);
 end
 
@@ -87,16 +79,19 @@ function SWEP:DoShoot()
 	local pos = p:GetShootPos();
 	local normal = p:GetAimVector();
 	local ammo = self.Weapon:Clip1();
+	local disassemble = true;
 	-- push attack
 	if(ammo >= 20) then
 		self:TakePrimaryAmmo(20);
-		local direction = p:GetForward()*10000;
+		Replicators.AddAttacker(p);
+		disassemble = Replicators.ARG(self.AttackMode);
 		for _,v in pairs(ents.FindInSphere(pos + (100*normal),75)) do
 			if(v ~= self.Owner) then
 				local c = v:GetClass();
 				if (c == "rep_n" or c == "rep_q" or c == "rep_h") then
-					Replicators.ARG();
-					v:Rep_AI_Disassemble();
+					if (disassemble) then
+						v:Rep_AI_Disassemble(0.5);
+					end
 				end
 			end
 		end

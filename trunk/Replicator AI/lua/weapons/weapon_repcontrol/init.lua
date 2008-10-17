@@ -15,19 +15,18 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 AddCSLuaFile("shared.lua");
 AddCSLuaFile("cl_init.lua");
 include("shared.lua");
-include("modules/callbacks.lua");
+
 SWEP.Sounds = {
-	Shot={Sound("weapons/hd_shot1.mp3"),Sound("weapons/hd_shot2.mp3")},
-	SwitchMode=Sound("buttons/button5.wav"),
+	Valid = Sound("buttons/button3.wav"),
+	Invalid = Sound("buttons/button2.wav"),
 };
-SWEP.AttackMode = 1;
-SWEP.MaxAmmo = 100;
-SWEP.Delay = 5;
-SWEP.TimeOut = 0.25; -- Time in seconds, a target will be tracked when hit with the beam
-SWEP.Ent = nil;
+SWEP.Code = "";
+SWEP.Delay = 1;
+SWEP.Time = 0;
 
 --################### Init the SWEP @JDM12989
 function SWEP:Initialize()
@@ -36,80 +35,46 @@ end
 
 --################### Initialize the shot @JDM12989
 function SWEP:PrimaryAttack(fast)
-	local ammo = self.Weapon:Clip1();
-	local delay = 0;
-	if(self.AttackMode == 1 and ammo >= 20 and not fast) then
-		self.Owner:EmitSound(self.Sounds.Shot[1],90,math.random(96,102));
-		self:PushEffect();
-		delay = 0.3;
-		self.Weapon:SetNextPrimaryFire(CurTime()+0.8);
-	elseif(self.AttackMode == 2 and ammo >= 3) then
-		self.Owner:SetNWBool("shooting_hand",true);
-		local time = CurTime();
-		if((self.LastSound or 0)+0.9 < time) then
-			self.LastSound = time;
-			self.Owner:EmitSound(self.Sounds.Shot[2],90,math.random(96,102));
+	if (fast) then return end;
+	if (CurTime() > self.Time) then
+		local rep = self:GetRep();
+		if (rep and rep:IsValid()) then
+			self:EmitSound(self.Sounds.Valid);
+			rep:SetCode(self.Code);
+		else
+			self:EmitSound(self.Sounds.Invalid);
 		end
-		self.Weapon:SetNextPrimaryFire(CurTime()+0.1);
-	else
-		self.Weapon:SetNextPrimaryFire(CurTime()+0.5);
+		self.Time = CurTime() + self.Delay;
 	end
-	local e = self.Weapon;
-	timer.Simple(delay,
-		function()
-			if(ValidEntity(e) and ValidEntity(e.Owner)) then
-				e:DoShoot();
-			end
-		end
-	);
 	return true;
 end
 
 --################### Secondary Attack @ aVoN
 function SWEP:SecondaryAttack()
-	--self:EmitSound(self.Sounds.SwitchMode); -- Make some mode-change sounds
-	--self.Weapon:SetNWBool("Mode",self.AttackMode); -- Tell client, what mode we are in
-	--self.Owner.__HandDeviceMode = self.AttackMode; -- So modes are saved accross "session" (if he died it's the last mode he used it before)
-end
-
---################### Reset Mode @ aVoN
-function SWEP:OwnerChanged() 
-	--self.AttackMode = self.Owner.__HandDeviceMode or 1;
-	--self.Weapon:SetNWBool("Mode",self.AttackMode);
-end
-
---################### Do the shot @JDM12989
-function SWEP:DoShoot()
-	local p = self.Owner;
-	if(not ValidEntity(p)) then return end;
+	if (CurTime() > self.Time) then
+		local rep = self:GetRep();
+		if (rep and rep:IsValid()) then
+			self:EmitSound(self.Sounds.Valid);
+			self.Code = rep:GetAI();
+		else
+			self:EmitSound(self.Sounds.Invalid);
+		end
+		self.Time = CurTime() + self.Delay;
+	end
 end
 
 --################### Opens up the main gui @JDM12989
 function SWEP:Reload()
-	self.Ent = nil;
-	trgts = ents.FindInSphere(self:GetPos(),2000);
-	for _,v in pairs(trgts) do
-		if (ValidEntity(v)) then
-			if (v:GetClass() == "rep_n" or v:GetClass() == "rep_q" or v:GetClass() == "rep_h") then
-				self.Ent = v;
-			end
-		end
-	end
-	if (not ValidEntity(self.Ent)) then return end;
 	local p = self.Owner;
 	timer.Create("Rep_Window",0.3,1,
 		function()
-			umsg.Start("Show_RepCodePanel",p);
-				umsg.Entity(self.Ent);
-				if (ValidEntity(self.Ent)) then
-					umsg.String(self.Ent.ai);
-				else
-					umsg.String("");
-				end
+			umsg.Start("Show_RepCtrl",p);
+			umsg.Entity(self);
+			umsg.String(self.Code);
 			umsg.End();
-			p.RepController = self;
 		end
-	);
+	);	
+	p.RepCtrl = self;
 end
 
 --################### Think @JDM2989
@@ -118,3 +83,28 @@ function SWEP:Think()
 		self.Owner:SetNWBool("shooting_hand",false);
 	end
 end
+
+--################### Get Replicator @JDM2989
+function SWEP:GetRep()
+	local rep = nil;
+	local p = self.Owner;
+	if(not ValidEntity(p)) then return end;
+	local pos = p:GetShootPos();
+	local normal = p:GetAimVector();
+	local t = util.QuickTrace(pos,normal*1000,{p});
+	for _,v in pairs(ents.FindInSphere(t.HitPos,10)) do
+		if (v ~= p) then
+			local c = v:GetClass();
+			if (c == "rep_n" or c == "rep_q" or c == "rep_h") then
+				rep = v;
+			end
+		end
+	end
+	return rep;
+end
+
+--################### Update code to transmit @JDM2989
+function RepUpdateCtrlCode(p,com,args)
+	p.RepCtrl.Code = args[1];
+end
+concommand.Add("RepUpdateCtrlCode",RepUpdateCtrlCode)

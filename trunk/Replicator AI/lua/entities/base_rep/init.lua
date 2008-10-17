@@ -22,6 +22,8 @@ AddCSLuaFile("shared.lua");
 include("shared.lua");
 
 --################# SENT CODE #################
+ENT.CDSIgnore = true;
+function ENT:gcbt_breakactions() end; ENT.hasdamagecase = true;
 
 --################# Init @JDM12989
 function ENT:Initialize()
@@ -37,7 +39,7 @@ function ENT:Initialize()
 	self:SetNWInt("Health",self.Max_Health);
 	Replicators.Add(self);
 	
-	self.ai = self:GetClass();
+	self.ai = "replicators/"..self:GetClass()..".txt";
 	self.code = {};
 	self:SetCode(self.ai);
 	self.freeze = false;
@@ -46,8 +48,9 @@ function ENT:Initialize()
 	self.tasks = false;
 	
 	self:AddResource("energy",100000);
-	self:AddResource("material_metal",5000);
-	self:AddResource("material_other",5000);
+	self.material_metal = 0;
+	self.material_other = 0;
+	self.material_max = 5000;
 	
 	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -110,10 +113,10 @@ end
 function ENT:SetCode(code)
 	local t = {};
 	local s = "";
-	if (file.Exists("replicators/"..code..".txt")) then
-		s = file.Read("replicators/"..code..".txt");
-	elseif (file.Exists("../../../data/replicators/"..code..".txt")) then
-		s = file.Read("../../../data/replicators/"..code..".txt");
+	if (file.Exists(code)) then
+		s = file.Read(code);
+	elseif (file.Exists("../../../data/"..code)) then
+		s = file.Read("../../../data/"..code);
 	else
 		return;
 	end
