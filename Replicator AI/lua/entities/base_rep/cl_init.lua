@@ -1,5 +1,8 @@
 include("shared.lua");
 
+language.Add("rep_n","Replicator");
+
+--################# Think (From StaffWeapon flyby code) @aVoN
 function ENT:Think()
 	if ((self.Last or 0)+0.6 <= CurTime()) then
 		local v = self:GetVelocity();
@@ -10,7 +13,7 @@ function ENT:Think()
 			self.Last = CurTime();
 			-- Vector math: Get the distance from the player orthogonally to the projectil's velocity vector
 			local intensity = math.sqrt(1-(d:DotProduct(v)/(d_len*v_len))^2)*d_len;
-			self.Entity:EmitSound(Sound("Replicators/walk.wav"),100*(1-intensity/2500),math.random(80,120));
+			self.Entity:EmitSound(Sound("Replicators/walk.mp3"),100*(1-intensity/2500),math.random(80,120));
 		end
 	end
 end

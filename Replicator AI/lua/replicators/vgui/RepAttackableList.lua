@@ -17,6 +17,7 @@
 */
 
 PANEL = {};
+PANEL.MC = nil;
 
 --############### Initialize @JDM12989
 function PANEL:Init()
@@ -35,9 +36,7 @@ function PANEL:Init()
 	self.VGUI.BT_Submit:SetPos(20,175);
 	self.VGUI.BT_Submit.DoClick =
 		function()
-			self:SetVisible(false);
-			parent = self:GetParent();
-			p_items = parent.VGUI.PL_Constructor:GetItems();
+			self:SetVisible(false);			
 			players = self.VGUI.PL_Players:GetItems();
 			npcs = self.VGUI.PL_NPCs:GetItems();
 			text = "{";
@@ -52,7 +51,7 @@ function PANEL:Init()
 				end
 			end
 			text = text.."}";
-			p_items[#p_items]:SetText(text);
+			self.MC:SetText(text);
 		end
 		
 	self.VGUI.PL_Attackable:SetPos(10,35);

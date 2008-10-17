@@ -1,3 +1,33 @@
+### Rev.23 (10/17/08)
+	#General
+		[add] ARG Immunity
+		[add] immunity to gcombat/cds
+		[chg] back to not using RD to monitor materials
+		[twk] cleaned up & improved lib functions
+		[twk] new npc icons (thanks to The_Jumper)
+		[fix] missing world models for rep_ctrl and arg
+
+	#ARG
+		[fix] ARG being held as a melee weapon
+		[fix] using ARG did not provoke attack
+
+	#Base_Rep
+		[chg] better prop removale code when gcombat/cds are absent
+
+	#Rep_Ctrl
+		[chg] new and improved coding gui!
+		[chg] new and improved load/save gui!
+		[add] fully loads code into window
+		[add] can now save on multiplayer!
+		[add] can create directories
+		[add] can delete files
+		[chg] left-click = upload code to replicator
+		[chg] right-click = get code from replicator
+
+	#Rep_Creator
+		[add] human-form replicator creator (prelimenary work)
+
+
 ### Rev.22 (8/31/08)
 	#General
 		[add] now adds models/materials/sounds to client download

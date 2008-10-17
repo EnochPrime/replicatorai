@@ -28,6 +28,7 @@ function Replicators.RD.GetResource(self,resource,default)
 			return RD_GetResourceAmount(self,resource) or default or 0;
 		end
 	end
+	return default or 0;
 end
 
 function Replicators.RD.ConsumeResource(self,resource,amount)

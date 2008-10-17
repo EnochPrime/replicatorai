@@ -1,12 +1,11 @@
 -- list of attackers
 Replicators.Attackers = {};
-
--- list of blocks
-Replicators.Blocks = {};
 -- list of replicators
 Replicators.Reps = {};
 -- maximum number of replicators
 Replicators.Limit = 25;
+-- Humanform numer
+Replicators.Human_Number = 1;
 -- required blocks for types
 Replicators.RequiredNumber = {};
 Replicators.RequiredNumber["rep_n"] = 20;
@@ -16,6 +15,10 @@ Replicators.HasRD = Dev_Link or #file.FindInLua("weapons/gmod_tool/stools/dev_li
 Replicators.HasCD = #file.FindInLua("autorun/server/sv_cds_core.lua") == 1;
 Replicators.HasGC = #file.FindInLua("weapons/gmod_tool/stools/gcombat.lua") == 1;
 Replicators.HasSG = #file.FindInLua("autorun/stargate.lua") == 1;
+-- ARG tables
+Replicators.Immunities = {};
+Replicators.FreqLog = {};
+Replicators.ImmuneAfter = 5;
 
 -- find precendence & model ignore lists
 Replicators.FindMe = {"prop_physics"};
@@ -23,39 +26,22 @@ Replicators.IgnoreMe = {
 	"models/Zup/ramps/brick_01.mdl",
 	"models/Zup/ramps/brick_01_small.mdl",
 	"models/Zup/ramps/sgc_ramp.mdl",
-	"models/Zup/ramps/sgc_ramp_small.mdl"
+	"models/Zup/ramps/sgc_ramp_small.mdl",
+	"models/Zup/sg_rings/ring.mdl",
 };
 
 --################# Register NPC @JDM12989
 function Replicators.Add(e)
-	local class = e:GetClass();
-	if (class == "block") then
-		table.insert(Replicators.Blocks,e);
-	end
-	if (class == "rep_*") then
-		table.insert(Replicators.Reps,e);
-	end
+	Replicators.Reps[e.ENTINDEX] = e;
 end
 
 --################# Remove NPC @JDM12989
 function Replicators.Remove(e)
-	local class = e:GetClass();
-	if (class == "block") then
-		for k,v in pairs(Replicators.Blocks) do
-			if (v == e) then
-				table.remove(Replicators.Blocks,k);
-			end
-		end
-	end
-	if (class == "rep_*") then
-		for k,v in pairs(Replicators.Reps) do
-			if (v == e) then
-				table.remove(Replicators.Reps,k);
-			end
-		end
-	end
-	if (#Replicators.Blocks == 0 and #Replicators.Reps == 0) then
+	table.remove(Replicators.Reps,e.ENTINDEX);
+	if (#Replicators.Reps == 0) then
 		Replicators.Attackers = {};
+		Replicators.Immunities = {};
+		Replicators.FreqLog = {};
 	end
 end
 
@@ -83,21 +69,15 @@ end
 
 --################# Add Attacker @JDM12989
 function Replicators.AddAttacker(p)
-	local c = p:GetClass();
-	if (c == "rep_n" or c == "rep_q" or c == "rep_h") then return end;
-	local add = true;
-	for _,v in pairs(Replicators.Attackers) do
-		if (v == p) then
-			add = false;
-		end
-	end
-	if (add) then
+	if (#Replicators.Attackers > 0 and not table.HasValue(Replicators.Attackers,p)) then
 		table.insert(Replicators.Attackers,p);
+	else
+		table.ForceInsert(Replicators.Attackers,p);
 	end
 end
 
 --################# Remove Attacker @JDM12989
-function Replicators.RemoveAttacker(p,g,a)
+function Replicators.RemoveAttacker(p)
 	for k,v in pairs(Replicators.Attackers) do
 		if (v == p) then
 			table.remove(Replicators.Attackers,k);
@@ -106,15 +86,14 @@ function Replicators.RemoveAttacker(p,g,a)
 end
 hook.Add("PlayerDeath","RemoveFromAttackers",Replicators.RemoveAttacker);
 
-function Replicators.ARG()
-	-- immunity code and such
-	return;
-end
-
-function Replicators.MyWeapon(p)
-	MsgN(p:SteamID());
-	if (p:SteamID() == "UNKOWN") then
-		p:Give("weapon_repcontrol");
+--################# ARG Immunity handling @JDM12989
+function Replicators.ARG(freq)
+	local freq_count = (Replicators.FreqLog[freq] or 0) + 1;
+	Replicators.FreqLog[freq] = freq_count;
+	if (freq_count >= Replicators.ImmuneAfter) then
+		Replicators.Immunities[freq] = freq;
 	end
+	if (#Replicators.Immunities == 0) then return true end;
+	if (table.HasValue(Replicators.Immunities,freq)) then return false end;
+	return true;
 end
-hook.Add("PlayerSpawn","GiveMeMyWeapon",Replicators.MyWeapon);

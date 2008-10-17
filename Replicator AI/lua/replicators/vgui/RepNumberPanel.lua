@@ -16,7 +16,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-PANEL = {}
+PANEL = {};
+PANEL.MC = nil;
 
 function PANEL:Init()
 	self.VGUI = {
@@ -49,10 +50,8 @@ function PANEL:Init()
 	self.VGUI.BT_Submit.DoClick =
 		function()
 			self:SetVisible(false);
-			local parent = self:GetParent();
 			local text = self.VGUI.TE_Number:GetValue();
-			local p_items = parent.VGUI.PL_Constructor:GetItems();
-			p_items[self.Index]:SetText(text);
+			self.MC:SetText(text);
 		end
 end
 

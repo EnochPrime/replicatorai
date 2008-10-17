@@ -8,10 +8,14 @@ function Replicators.Load()
 			include("replicators/server/"..fn);
 			MsgN("Including: "..fn);
 		end
+		for _,fn in pairs(file.FindInLua("replicators/vgui/*.lua")) do
+			AddCSLuaFile("replicators/vgui/"..fn);
+			MsgN("AddCSLua: "..fn);
+		end
+		AddCSLuaFile("autorun/Replicators.lua");
 	elseif (CLIENT) then
 		for _,fn in pairs(file.FindInLua("replicators/vgui/*.lua")) do
 			include("replicators/vgui/"..fn);
-			AddCSLuaFile("replicators/vgui/"..fn);
 			MsgN("Including: "..fn);
 		end
 	end

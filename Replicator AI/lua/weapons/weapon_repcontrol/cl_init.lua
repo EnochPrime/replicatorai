@@ -6,3 +6,7 @@ end
 
 language.Add("Battery_ammo","Naquadah");
 language.Add("weapon_repcontrol","Replicator Control PC");
+
+function SWEP:SetCode(s)
+	RunConsoleCommand("RepUpdateCtrlCode",s);
+end

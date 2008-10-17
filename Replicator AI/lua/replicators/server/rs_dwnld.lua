@@ -23,6 +23,13 @@ function Replicators.ResDownload()
 		"addons/Replicator AI/materials/VGUI/entities/weapon_arg.vmt",
 		"addons/Replicator AI/materials/VGUI/entities/weapon_arg.vtf",
 		
+		"addons/Replicator AI/materials/Votekick/rep_blk2.vmt",
+		"addons/Replicator AI/materials/Votekick/rep_blk2.vtf",
+		"addons/Replicator AI/materials/Votekick/rep_ctrl.vmt",
+		"addons/Replicator AI/materials/Votekick/rep_ctrl.vft",
+		"addons/Replicator AI/materials/Votekick/rep_ctrl2.vmt",
+		"addons/Replicator AI/materials/Votekick/rep_ctrl2.vtf",
+		
 		"addons/Replicator AI/materials/weapons/arg_inventory.vmt",
 		"addons/Replicator AI/materials/weapons/arg_inventory.vtf",
 	};
@@ -195,6 +202,14 @@ function Replicators.ResDownload()
 		"addons/Replicator AI/models/JDM12989/Replicators/Rep_N/Gibs/19.sw.vtx",
 		"addons/Replicator AI/models/JDM12989/Replicators/Rep_N/Gibs/19.vvd",
 		"addons/Replicator AI/models/JDM12989/Replicators/Rep_N/Gibs/19.xbox.vtx",
+		
+		"addons/Replicator AI/models/Votekick/rep_create.dx80.vtx",
+		"addons/Replicator AI/models/Votekick/rep_create.dx90.vtx",
+		"addons/Replicator AI/models/Votekick/rep_create.mdl",
+		"addons/Replicator AI/models/Votekick/rep_create.phy",
+		"addons/Replicator AI/models/Votekick/rep_create.sw.vtx",
+		"addons/Replicator AI/models/Votekick/rep_create.vvd",
+		"addons/Replicator AI/models/Votekick/rep_create.xbox.vtx",
 	};
 	
 	local sounds = {

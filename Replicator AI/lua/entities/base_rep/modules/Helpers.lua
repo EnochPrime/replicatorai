@@ -2,12 +2,10 @@
 function ENT:Activity(e)
 	local c = e:GetClass();
 	if (c == "rep_q") then
-		local material_metal = self:GetResource("material_metal");
-		local material_other = self:GetResource("material_other");
-		e:SupplyResource("material_metal",material_metal);
-		e:SupplyResource("material_other",material_other);
-		self:ConsumeResource("material_metal",material_metal);
-		self:ConsumeResource("material_other",material_other);
+		e.material_metal = self.material_metal;
+		e.material_other = self.material_other;
+		self.material_metal = 0;
+		self.material_other = 0;
 	end
 	
 	if (e:IsPlayer() or e:IsNPC()) then
@@ -20,13 +18,18 @@ function ENT:Activity(e)
 		elseif (cds_damagepos) then
 			cds_damagepos(e,10,50,nil,self);
 		else
-			timer.Create("prop_"..e:EntIndex(),3,1,
-				function()
+			if (not e.__count) then
+				e.__count = 1;
+			else
+				e.__count = e.__count + 1;
+				local ent_phys = e:GetPhysicsObject();
+				local max_count = ent_phys:GetMass()/ent_phys:GetVolume();
+				if (e.__count >= max_count) then
 					e:Remove();
 				end
-			);
+			end
 		end
-		self:SupplyResource("material_metal",10);
+		self.material_metal = self.material_metal + 10;
 	elseif (c == "Zero_Point_Module") then
 		self:Link(self,e);
 	end
