@@ -1,3 +1,22 @@
+### Rev.24 (10/24/08)
+	#Block
+		[rem] removed ability to spawn
+
+	#Rep_N
+		[fix] not bringing resources back to queen
+
+	#Rep_H
+		[chg] models generated randomly only when not set by creator
+
+	#Rep_Q
+		[fix] new rep spawning issues
+
+	#Rep_Creator
+		[fix] wrong texture files
+
+	#Rep_Ctrl
+		[fix] :1:unexpected symbol near')'
+
 ### Rev.23 (10/17/08)
 	#General
 		[add] ARG Immunity
@@ -19,7 +38,6 @@
 		[chg] new and improved load/save gui!
 		[add] fully loads code into window
 		[add] can now save on multiplayer!
-		[add] can create directories
 		[add] can delete files
 		[chg] left-click = upload code to replicator
 		[chg] right-click = get code from replicator

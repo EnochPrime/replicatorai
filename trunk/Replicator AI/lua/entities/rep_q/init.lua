@@ -53,22 +53,20 @@ function ENT:SelectSchedule()
 	if (#Replicators.Reps >= Replicators.Limit) then return end;
 	local energy = self:GetResource("energy");
 	energy = 100; -- temp until finding energy is complete
-	local material_metal = self:GetResource("material_metal");
-	local material_other = self:GetResource("material_other");
 	--[[ find energy
 	if (energy == 0) then
 		--self:StartSchedule(self:Move(self:Find("energy")));
 	end]]
 	-- replicate
-	if (energy >= 100 and material_metal >= 200) then
+	if (energy >= 100 and (self.material_metal >= 200 or self.material_other >= 200)) then
 		--spawn new rep
 		local pos = self:GetPos() + self:GetForward()*60;
 		local rep = ents.Create("rep_n");
 		rep:SetPos(pos);
 		rep:Spawn();
 		rep:SetMaterial("materials/JDM12989/Replicators/Block_Gray.vmt");
-		self:ConsumeResource("energy",100);
-		self:ConsumeResource("material_metal",200);
+		--self:ConsumeResource("energy",100);
+		self.material_metal = self.material_metal - 200;
 	end
 	--[[  commented out because stupid ents.Create cause a nil value error!
 	local pos = self:GetPos() + (self:GetForward() * 60);

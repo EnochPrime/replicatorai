@@ -1,8 +1,8 @@
 "AddonInfo"
 {
 	"name"		"Replicators"
-	"version"	"23"
-	"up_date"	"October 18th 2008"
+	"version"	"24"
+	"up_date"	"October 24th 2008"
 	"author_name"	"JDM12989"
 	"author_email"	""
 	"author_url"	""

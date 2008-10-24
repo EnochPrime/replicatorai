@@ -352,6 +352,9 @@ function PANEL:CompileCode()
 					s = s..text..",";
 				end
 				if (i == #args) then
+					if (string.Right(s,1) == ",") then
+						s = string.sub(s,1,string.len(s)-1);
+					end
 					s = s..");";
 				end
 			end

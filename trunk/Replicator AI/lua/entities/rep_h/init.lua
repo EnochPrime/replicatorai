@@ -27,8 +27,15 @@ include("shared.lua");
 function ENT:Initialize()
 	self.Male = file.Find("../models/Humans/Group01/Male_*.mdl");
 	self.Female = file.Find("../models/Humans/Group01/Female_*.mdl");
-	self.Model = self:GetHumanModel();
 	self.BaseClass.Initialize(self);
+	if (self.Model == "temp.mdl") then
+		self:SetModel(self:GetHumanModel());
+	end
+end
+
+function ENT:ChangeModel(mdl)
+	self:SetModel(mdl);
+	self.Model = mdl;
 end
 
 function ENT:GetHumanModel()

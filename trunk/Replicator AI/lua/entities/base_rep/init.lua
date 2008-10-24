@@ -50,7 +50,7 @@ function ENT:Initialize()
 	self:AddResource("energy",100000);
 	self.material_metal = 0;
 	self.material_other = 0;
-	self.material_max = 5000;
+	self.material_max = 1000;
 	
 	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
