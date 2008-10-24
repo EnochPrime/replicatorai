@@ -6,6 +6,7 @@ function ENT:Activity(e)
 		e.material_other = self.material_other;
 		self.material_metal = 0;
 		self.material_other = 0;
+		return;
 	end
 	
 	if (e:IsPlayer() or e:IsNPC()) then
@@ -19,12 +20,12 @@ function ENT:Activity(e)
 			cds_damagepos(e,10,50,nil,self);
 		else
 			if (not e.__count) then
+				local ent_phys = e:GetPhysicsObject();
 				e.__count = 1;
+				e.__maxcount = ent_phys:GetMass();
 			else
 				e.__count = e.__count + 1;
-				local ent_phys = e:GetPhysicsObject();
-				local max_count = ent_phys:GetMass()/ent_phys:GetVolume();
-				if (e.__count >= max_count) then
+				if (e.__count >= e.__maxcount) then
 					e:Remove();
 				end
 			end
@@ -77,12 +78,16 @@ function ENT:Find(s)
 	for _,v in pairs(ents.FindInSphere(pos,d)) do
 		color = {v:GetColor()};
 		if (v:GetClass() == s and color[4] == 255 and not table.HasValue(Replicators.IgnoreMe,v:GetModel())) then
-			dist = (pos - v:GetPos()):Length();
-			if (dist < d) then
-				d = dist;
-				e = v;
-			end
+			--if (not v.__rep_count) then v.__rep_count = 0 end;
+			--if (v.__rep_count < 3) then
+				dist = (pos - v:GetPos()):Length();
+				if (dist < d) then
+					d = dist;
+					e = v;
+				end
+			--end
 		end
 	end
+	--if (ValidEntity(e)) then e.__rep_count = e.__rep_count + 1 end;
 	return e;
 end

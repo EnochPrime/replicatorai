@@ -33,6 +33,7 @@ function ENT:Initialize()
 	self.enabled = false;
 	self.percent = 0;
 	self.dummy = nil;
+	self.mdl = "models/gman.mdl";
 	
 	self:AddResource("energy",1);
 	--self:CreateWireOutputs("Active","% Complete");
@@ -64,34 +65,24 @@ function ENT:ShowOutput(v,force)
 	self:SetOverlayText("Rep Creator "..add.."\n"..v.."%");
 end
 
-function ENT:Use()
-	-- show gui
-	-- select model
-	-- select code / features (eventually, like no replicating and such)
-	-- then start the process
+--################# Use @JDM12989
+function ENT:Use(p)
 	if (self.enabled) then
 		self:Abort();
 		return;
 	end
-	self.enabled = true;
-	self:SpawnModel("models/gman.mdl");
-	timer.Create("rep_create_"..self.ENTINDEX,0.25,100,
-		function()
-			self.percent = self.percent + 1;
-			--self:ConsumeResource("energy",10000);
-			local r,g,b,a = self.dummy:GetColor();
-			self.dummy:SetColor(r,g,b,self.percent*2.55);
-			if (self.percent == 100) then
-				self.dummy:Remove();
-				local rep = ents.Create("rep_h");
-				rep:SetModel("models/gman.mdl");	-- going to have to change to model spawn deal
-				rep:SetPos(self:GetPos()+self:GetForward()*50+self:GetUp()*-15);
-				rep:Spawn();
-				self.percent = 0;
-				self.enabled = false;
-			end
-		end
-	);
+	
+	self.mdl = "models/gman.mdl";
+	self:Start();
+	
+	--[[umsg.Start("Show_RepHumanCtrl");
+		umsg.Entity(self);
+	umsg.End();]]
+	
+	p.Rep_Create = self;
+	-- select model
+	-- select code / features (eventually, like no replicating and such)
+	-- then start the process
 end
 
 --################# Think @JDM12989
@@ -101,6 +92,37 @@ function ENT:Think()
 	return true;
 end
 
+--################# StartCreation @JDM12989
+function ENT:Start()
+	self.enabled = true;
+	self:SpawnModel(self.mdl);
+	timer.Create("rep_create_"..self.ENTINDEX,0.25,100,
+		function()
+			self.percent = self.percent + 1;
+			--self:ConsumeResource("energy",10000);
+			local r,g,b,a = self.dummy:GetColor();
+			self.dummy:SetColor(r,g,b,self.percent*2.55);
+			if (self.percent == 100) then
+				self.dummy:Remove();
+				local rep = ents.Create("rep_h");
+				rep:ChangeModel(self.mdl);
+				rep:SetPos(self:GetPos()+self:GetForward()*50+self:GetUp()*-25);
+				rep:Spawn();
+				self.percent = 0;
+				self.enabled = false;
+			end
+		end
+	);
+end
+
+local function Rep_Create_Start(p,com,args)
+	local dev = p.Rep_Create;
+	dev.mdl = args[1];
+	dev:Start();
+end
+concommand.Add("Rep_Create_Start",Rep_Create_Start);
+
+--################# Abort Creation @JDM12989
 function ENT:Abort()
 	timer.Destroy("rep_create_"..self.ENTINDEX);
 	self.dummy:Remove();
