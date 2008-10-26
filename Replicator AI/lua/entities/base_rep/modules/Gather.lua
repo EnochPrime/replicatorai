@@ -10,7 +10,7 @@ function ENT:Rep_AI_Gather(max_num)
 	else
 		e = self:Find("rep_q");
 	end
-	self.tasks = self:Rep_AI_Follow(e,true);
+	self:Rep_AI_Follow(e,true);
 end
 
 local Data = {

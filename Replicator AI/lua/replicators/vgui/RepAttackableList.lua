@@ -62,8 +62,6 @@ function PANEL:Init()
 	
 	self.VGUI.PL_Players:SetAutoSize(true);
 	self.VGUI.PL_NPCs:SetAutoSize(true);
-	
-	self:SetUpList();
 end
 
 --############### Keeps buttons in the correct position when resizing @JDM12989
@@ -87,6 +85,9 @@ end
 
 --############### Setting up list @JDM12989
 function PANEL:SetUpList()
+	self.VGUI.PL_Attackable:Clear();
+	self.VGUI.PL_Players:Clear();
+	self.VGUI.PL_NPCs:Clear();
 	local ents = ents.GetAll();
 	-- cc with players
 	local DCC_Players = vgui.Create("DCollapsibleCategory",self);

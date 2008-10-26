@@ -33,7 +33,6 @@ function ENT:Initialize()
 	self:SetMoveType(MOVETYPE_VPHYSICS);
 	self:SetCollisionGroup(COLLISION_GROUP_WORLD);
 	self:DrawShadow(false);
-	Replicators.Add(self);
 	
 	self.active = true;
 	self.dead = false;

@@ -23,7 +23,6 @@ function ENT:Rep_AI_Follow(e,b)
 		self:StartSchedule(s);
 		self.tasks = true;
 	end
-	return self.tasks;
 end
 
 local Data = {

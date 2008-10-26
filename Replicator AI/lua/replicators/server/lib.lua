@@ -3,7 +3,7 @@ Replicators.Attackers = {};
 -- list of replicators
 Replicators.Reps = {};
 -- maximum number of replicators
-Replicators.Limit = 25;
+CreateConVar("replicator_limit","25",false);
 -- Humanform numer
 Replicators.Human_Number = 1;
 -- required blocks for types
@@ -38,7 +38,7 @@ end
 --################# Remove NPC @JDM12989
 function Replicators.Remove(e)
 	table.remove(Replicators.Reps,e.ENTINDEX);
-	if (#Replicators.Reps == 0) then
+	if (table.Count(Replicators.Reps) == 0) then
 		Replicators.Attackers = {};
 		Replicators.Immunities = {};
 		Replicators.FreqLog = {};
@@ -48,7 +48,7 @@ end
 --################# Returns a replicator that is available for joining a group
 function Replicators.GetAvailable(pos)
 	local reps = {};
-	--local exclude = #Replicators.Reps / 2;
+	--local exclude = table.Count(Replicators.Reps) / 2;
 	local exclude = 0;
 	
 	for _,v in pairs(Replicators.Reps) do
