@@ -14,7 +14,7 @@ end
 function ENT:SelectSchedule()
 	if (self.freeze) then return end;
 	-- if low numbers then resort to the start up code
---	if (#Replicators.Reps <= 1) then
+--	if (table.Count(Replicators.Reps) <= 1) then
 --		self.BaseClass.SelectSchedule();
 --	else
 		self.attack = self:AttackWho();

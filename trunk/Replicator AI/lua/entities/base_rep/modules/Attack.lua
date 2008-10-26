@@ -6,7 +6,7 @@ end
 -- return true	ent to attack
 -- return false	no ent to attack
 function ENT:Rep_AI_Attack(e)
-	self.tasks = self:Rep_AI_Follow(e,true);
+	self:Rep_AI_Follow(e,true);
 end
 
 local Data = {

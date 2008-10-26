@@ -2,8 +2,8 @@
 function ENT:Activity(e)
 	local c = e:GetClass();
 	if (c == "rep_q") then
-		e.material_metal = self.material_metal;
-		e.material_other = self.material_other;
+		e.material_metal = e.material_metal + self.material_metal;
+		e.material_other = e.material_other + self.material_other;
 		self.material_metal = 0;
 		self.material_other = 0;
 		return;
@@ -43,6 +43,7 @@ function ENT:ExtractEnt(t)
 		local ents = ents.GetAll();
 		local ent_table = {};
 		local ent_trgt = ent_trgt or nil;
+		local p_trgt = nil;
 		
 		-- setup of ent_table
 		for _,v in pairs(ents) do
@@ -52,9 +53,10 @@ function ENT:ExtractEnt(t)
 				ent_table[v:GetClass()] = v;
 			end
 		end
+
 		-- find 1st valid and set as target
 		for k,v in pairs(ent_table) do
-			if (not p_trgt and table.HasValue(t,k) and ValidEntity(v)) then
+			if (not ValidEntity(p_trgt) and table.HasValue(t,k) and ValidEntity(v)) then
 				p_trgt = v;
 				t = p_trgt;
 			end

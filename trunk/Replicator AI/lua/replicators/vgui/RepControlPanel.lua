@@ -237,6 +237,7 @@ function PANEL:CreateVariableMC(k,PL)
 			if (text == "Attackable") then
 				if (not self.VGUI.P_AttackableList:IsVisible()) then
 					self.VGUI.P_AttackableList:SetVisible(true);
+					self.VGUI.P_AttackableList:SetUpList();
 					self.VGUI.P_AttackableList.MC = MultiChoice;
 				end
 			elseif (text == "Number") then
