@@ -12,13 +12,11 @@ function ENT:Rep_AI_Follow(e,b)
 		local s = ai_schedule.New();
 		s:EngTask("TASK_GET_PATH_TO_TARGET",0);
 		s:EngTask("TASK_FACE_PATH",0);
-		if (b) then
-			local d = (pos-epos):Length();
-			if (d > 50) then
-				s:EngTask("TASK_RUN_PATH",0);
-			else
-				self:Activity(e);
-			end
+		local d = (pos-epos):Length();
+		if (d > 50) then
+			s:EngTask("TASK_RUN_PATH",0);
+		elseif (b) then
+			self:Activity(e);
 		end
 		self:StartSchedule(s);
 		self.tasks = true;

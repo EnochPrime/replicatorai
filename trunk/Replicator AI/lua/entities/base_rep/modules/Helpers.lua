@@ -40,28 +40,34 @@ end
 -- return ent
 function ENT:ExtractEnt(t)
 	if (type(t) == "table") then
-		local ents = ents.GetAll();
 		local ent_table = {};
 		local ent_trgt = ent_trgt or nil;
 		local p_trgt = nil;
+		local d = 10000; -- maximum distance
+		local pos = self:GetPos();
 		
 		-- setup of ent_table
-		for _,v in pairs(ents) do
-			if (v:IsPlayer()) then
-				ent_table[v:GetName()] = v;
-			elseif (v:IsNPC()) then
-				ent_table[v:GetClass()] = v;
+		for _,v in pairs(ents.GetAll()) do
+			if (v:IsPlayer() and table.HasValue(t,v:GetName())) then
+				table.insert(ent_table,v);
+			elseif (v:IsNPC() and table.HasValue(t,v:GetClass())) then
+				table.insert(ent_table,v);
 			end
 		end
 
 		-- find 1st valid and set as target
-		for k,v in pairs(ent_table) do
-			if (not ValidEntity(p_trgt) and table.HasValue(t,k) and ValidEntity(v)) then
-				p_trgt = v;
-				t = p_trgt;
+		for _,v in pairs(ent_table) do
+			if (ValidEntity(v)) then
+				local dist = (v:GetPos() - pos):Length();
+				if (dist <= d) then
+					p_trgt = v;
+					t = p_trgt;
+					d = dist;
+				end
 			end
 		end
 	end
+	
 	-- last resort in case the table is not chaged to a player or npc
 	if (type(t) == "table") then
 		t = nil;
@@ -74,7 +80,7 @@ end
 function ENT:Find(s)
 	local e = nil;
 	local color = {};
-	local d = 5000;
+	local d = 10000; -- maximum find distance
 	local dist = 0;
 	local pos = self:GetPos();
 	for _,v in pairs(ents.FindInSphere(pos,d)) do

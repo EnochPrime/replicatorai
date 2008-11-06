@@ -31,31 +31,12 @@ end
 
 --################# Select Schedule @JDM12989
 function ENT:SelectSchedule()
-	-- remove nil values from table
-	while (table.HasValue(self.groupies,nil)) do
-		for k,v in pairs(self.groupies) do
-			if (v == nil) then
-				table.remove(self.groupies,k);
-			end
-		end
-	end
-	
-	-- get more groupies if possible
-	if (#self.groupies < self.max_groupies) then
-		local new_groupie = Replicators.GetAvailable(self:GetPos());
-		if (ValidEntity(new_groupie)) then
-			table.insert(self.groupies,new_groupie);
-			new_groupie.leader = self;
-			new_groupie:SetCode("rep_n_group");
-		end
-	end
-	
 	if (table.Count(Replicators.Reps) >= GetConVarNumber("replicator_limit")) then return end;
 	local energy = self:GetResource("energy");
 	energy = 100; -- temp until finding energy is complete
 	--[[ find energy
-	if (energy == 0) then
-		--self:StartSchedule(self:Move(self:Find("energy")));
+	if (rep_energy == 0) then
+		self:Rep_AI_Follow(self:Find("energy"));
 	end]]
 	-- replicate
 	if (energy >= 100 and self.material_metal >= 2000) then
@@ -64,7 +45,9 @@ function ENT:SelectSchedule()
 		local rep = ents.Create("rep_n");
 		rep:SetPos(pos);
 		rep:Spawn();
-		rep:SetMaterial("materials/JDM12989/Replicators/Block_Gray.vmt");
+		--rep:SetMaterial("materials/JDM12989/Replicators/Block_Gray.vmt");
+		rep.leader = self;
+		self.minions[rep.ENTINDEX] = rep;
 		--self:ConsumeResource("energy",100);
 		self.material_metal = self.material_metal - 2000;
 	end

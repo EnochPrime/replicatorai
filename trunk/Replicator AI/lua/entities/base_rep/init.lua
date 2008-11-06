@@ -43,11 +43,12 @@ function ENT:Initialize()
 	self.code = {};
 	self:SetCode(self.ai);
 	self.freeze = false;
-	self.groupies = {};
 	self.leader = nil;
+	self.minions = {};
 	self.tasks = false;
 	
 	self:AddResource("energy",100000);
+	self:AddResource("rep_energy",100000);
 	self.material_metal = 0;
 	self.material_other = 0;
 	self.material_max = 1000;
@@ -69,6 +70,9 @@ function ENT:OnTakeDamage(dmg)
 		if (dmg:IsBulletDamage() or (dmg:IsExplosionDamage() and dam < 100) or dam == 100) then
 			--fall apart
 			Replicators.Remove(self);
+			if (self.leader and ValidEntity(self.leader)) then
+				table.remove(self.leader.minions,self.ENTINDEX);
+			end
 			self:Remove();
 			-- MAKE THEM WORK THE CORRECT WAY!!!
 			local str = "models/JDM12989/Replicators/"..self:GetClass().."/Gibs/";
@@ -81,29 +85,6 @@ function ENT:OnTakeDamage(dmg)
 				gib:PhysicsInit(SOLID_VPHYSICS);
 				gib:GetPhysicsObject():Wake();
 				gib.dead = true;
-			end
-		end
-	end
-end
-
---################# Select Schedule @JDM12989
-function ENT:SelectSchedule()
-	local energy = self:GetResource("energy",1000);
-	
-	-- run away from people
-	-- form queen or gather more material & energy
-	if (energy >= 1000 and self.materials >= 1000) then
-		self:ConsumeResource("energy",1000);
-		self.materials = self.materials - 1000;
-		Replicators.Remove(self);
-		self:Remove();
-		local e = ents.Create("rep_q");
-		e:SetPos(self:GetPos());
-		e:Spawn();
-	else
-		if (not self:Rep_AI_Gather(1000)) then
-			if (not self:Rep_AI_Follow(self:Find("Zero_Point_Module"))) then
-				self:Rep_AI_Wander();
 			end
 		end
 	end

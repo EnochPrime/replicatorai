@@ -3,7 +3,7 @@ Replicators.Attackers = {};
 -- list of replicators
 Replicators.Reps = {};
 -- maximum number of replicators
-CreateConVar("replicator_limit","25",false);
+CreateConVar("replicator_limit","25",FCVAR_ARCHIVE);
 -- Humanform numer
 Replicators.Human_Number = 1;
 -- required blocks for types
@@ -15,13 +15,12 @@ Replicators.HasRD = Dev_Link or #file.FindInLua("weapons/gmod_tool/stools/dev_li
 Replicators.HasCD = #file.FindInLua("autorun/server/sv_cds_core.lua") == 1;
 Replicators.HasGC = #file.FindInLua("weapons/gmod_tool/stools/gcombat.lua") == 1;
 Replicators.HasSG = #file.FindInLua("autorun/stargate.lua") == 1;
--- ARG tables
+-- ARG variables
 Replicators.Immunities = {};
 Replicators.FreqLog = {};
-Replicators.ImmuneAfter = 5;
-
--- find precendence & model ignore lists
-Replicators.FindMe = {"prop_physics"};
+CreateConVar("replicator_arg_immunity_disable","0",FCVAR_ARCHIVE);
+CreateConVar("replicator_arg_immunity_after","5",FCVAR_ARCHIVE);
+--model ignore lists
 Replicators.IgnoreMe = {
 	"models/Zup/ramps/brick_01.mdl",
 	"models/Zup/ramps/brick_01_small.mdl",
@@ -42,28 +41,6 @@ function Replicators.Remove(e)
 		Replicators.Attackers = {};
 		Replicators.Immunities = {};
 		Replicators.FreqLog = {};
-	end
-end
-
---################# Returns a replicator that is available for joining a group
-function Replicators.GetAvailable(pos)
-	local reps = {};
-	--local exclude = table.Count(Replicators.Reps) / 2;
-	local exclude = 0;
-	
-	for _,v in pairs(Replicators.Reps) do
-		if (v.ai == "rep_n") then
-			table.insert(reps,v);
-		end
-	end
-	
-	if (#reps <= exclude) then return end;
-	
-	for _,v in pairs(reps) do
-		local d = (v:GetPos()-pos):Length();
-		if (d <= 500) then
-			return v;
-		end
 	end
 end
 
@@ -88,12 +65,22 @@ hook.Add("PlayerDeath","RemoveFromAttackers",Replicators.RemoveAttacker);
 
 --################# ARG Immunity handling @JDM12989
 function Replicators.ARG(freq)
-	local freq_count = (Replicators.FreqLog[freq] or 0) + 1;
-	Replicators.FreqLog[freq] = freq_count;
-	if (freq_count >= Replicators.ImmuneAfter) then
-		Replicators.Immunities[freq] = freq;
+	-- returns true for disassembling
+	if (GetConVarNumber("replicator_arg_immunity_disable") == 0) then
+		local freq_count = (Replicators.FreqLog[freq] or 0) + 1;
+		Replicators.FreqLog[freq] = freq_count;
+		if (freq_count >= GetConVarNumber("replicator_arg_immunity_after")) then
+			Replicators.Immunities[freq] = freq;
+		else
+			-- removes in case it has already become immune but "replicator_arg_immunity_after" has been increased
+			if (table.HasValue(Replicators.Immunities,freq)) then
+				talbe.Remove(Replicators.Immunuities,freq);
+			end
+		end
+		-- no immunities?
+		if (#Replicators.Immunities == 0) then return true end;
+		-- is immune to freq?
+		if (table.HasValue(Replicators.Immunities,freq)) then return false end;
 	end
-	if (#Replicators.Immunities == 0) then return true end;
-	if (table.HasValue(Replicators.Immunities,freq)) then return false end;
 	return true;
 end
