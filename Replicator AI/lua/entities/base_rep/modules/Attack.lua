@@ -1,5 +1,17 @@
 function ENT:AttackWho()
-	return Replicators.Attackers[1];
+	local d = 10000; -- maximum distance to find
+	local e = nil;
+	local pos = self:GetPos();
+	for _,v in pairs(Replicators.Attackers) do
+		if (ValidEntity(v)) then
+			local dist = (v:GetPos() - pos):Length();
+			if (dist <= d) then
+				e = v;
+				d = dist;
+			end
+		end
+	end
+	return e;
 end
 
 -- make rep attack specific enemy

@@ -1,3 +1,21 @@
+### Rev.26 (11/6/08)
+	#General
+		[twk] improvments to the resource download
+		[twk] convar "replicator_arg_immunity_disable" (1 means arg will always destroy reps)
+		[twk] convar "replicator_arg_immunity_after" (# means how many shots before rep is immune)
+
+	#Base_Rep
+		[fix] walking on follow
+		[add] Make_Queen
+		[twk] wander will abort
+		[chg] goes after closest enemy
+
+	#Rep_N
+		[add] makes queen
+
+	#Rep_Creator
+		[fix] missing texture
+
 ### Rev.25 (10/25/08)
 	#General
 		[fix] replicator count issue causing no limit
